@@ -11,9 +11,15 @@ export default function Home() {
             alt="M's Omotenashi Concierge"
           />
         </h1>
-        <p className="brand-note">
-          長年出版社で営業として働いてきた私が実際に食べたもの、買ったもの、いつか行ってみたい場所をご紹介しています。
-        </p>
+        <div className="brand-note">
+          <p>長年、仕事やプライベートで数多くの会食や食の場を経験してきました。</p>
+          <p>
+            実際に訪れてよかった店、美味しかったもの、いつか訪れたい店、
+            <br />
+            そして贈って喜ばれた手土産、頂いてうれしかった品。
+          </p>
+          <p>私自身の経験と選択眼で集めた、食とおもてなしのパーソナル・コンシェルジュです。</p>
+        </div>
       </header>
 
       <nav className="choice-grid" aria-label="カテゴリを選ぶ">
