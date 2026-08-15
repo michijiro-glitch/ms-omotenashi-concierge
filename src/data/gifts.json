@@ -1,0 +1,34 @@
+[
+  {
+    "id": "awabi-steak-wako",
+    "name": "アワビのステーキ",
+    "brand": "和光",
+    "category": "高級",
+    "priceRange": "8,000〜12,000円",
+    "recipients": ["取引先"],
+    "keeping": "60日 / 常温",
+    "purchaseUrl": "https://www.wako.co.jp/c/category-food/c-all-food/c-cuisine/09660015",
+    "recommend": "日持ちするので一人暮らしの方にも",
+    "caution": "品切れしているときもある / 気の利いた上等なお土産として好評。 / レタスの上にのせて食べると美味しい。1個入りもある。",
+    "photos": [],
+    "mediaName": "",
+    "mediaUrl": "",
+    "wantToUseAgain": 5
+  },
+  {
+    "id": "hasu-mochi-wakuden",
+    "name": "蓮もち・和煮詰め合わせ",
+    "brand": "和久傳",
+    "category": "高級",
+    "priceRange": "5,000〜8,000円",
+    "recipients": ["取引先"],
+    "keeping": "3か月 / 常温",
+    "purchaseUrl": "https://shop.wakuden.kyoto/shop/g/g0021265031",
+    "recommend": "日持ちする蓮根もちと佃煮の詰め合わせ",
+    "caution": "佃煮はおつまみにもなるので相手を選ばず喜ばれる",
+    "photos": [],
+    "mediaName": "",
+    "mediaUrl": "",
+    "wantToUseAgain": null
+  }
+]

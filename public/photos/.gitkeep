@@ -1,0 +1,3 @@
+# 写真ファイルを置く場所
+# 例: public/photos/apicius-1.jpg
+# restaurants.json の photos には "apicius-1.jpg" または画像URLを書きます
