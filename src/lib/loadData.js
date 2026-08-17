@@ -1,0 +1,41 @@
+import { parseCsv } from "./csv.js";
+import { mapGifts, mapRestaurants } from "./sheetMap.js";
+
+async function fetchCsv(url) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`CSV ${response.status}`);
+  }
+  return response.text();
+}
+
+function mergeByName(sheetItems, localItems) {
+  const names = new Set(sheetItems.map((item) => item.name));
+  return [...sheetItems, ...localItems.filter((item) => !names.has(item.name))];
+}
+
+export async function loadRestaurants(fallback) {
+  const url = import.meta.env.VITE_RESTAURANTS_CSV_URL;
+  if (!url) return { items: fallback, source: "local" };
+
+  try {
+    const items = mapRestaurants(parseCsv(await fetchCsv(url)));
+    if (items.length === 0) return { items: fallback, source: "local" };
+    return { items: mergeByName(items, fallback), source: "sheet" };
+  } catch {
+    return { items: fallback, source: "local" };
+  }
+}
+
+export async function loadGifts(fallback) {
+  const url = import.meta.env.VITE_GIFTS_CSV_URL;
+  if (!url) return { items: fallback, source: "local" };
+
+  try {
+    const items = mapGifts(parseCsv(await fetchCsv(url)));
+    if (items.length === 0) return { items: fallback, source: "local" };
+    return { items: mergeByName(items, fallback), source: "sheet" };
+  } catch {
+    return { items: fallback, source: "local" };
+  }
+}

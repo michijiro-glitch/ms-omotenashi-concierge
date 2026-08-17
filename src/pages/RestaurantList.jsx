@@ -1,12 +1,13 @@
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import restaurants from "../data/restaurants.json";
 import ListHeader from "../components/ListHeader.jsx";
 import RestaurantCard from "../components/RestaurantCard.jsx";
+import { useData } from "../data/DataProvider.jsx";
 import { areaLabel, matchesRestaurant, sortPriceRanges, uniqueValues } from "../lib/restaurants.js";
 import { getParam, setParam } from "../lib/urlState.js";
 
 export default function RestaurantList() {
+  const { restaurants, loading } = useData();
   const [searchParams, setSearchParams] = useSearchParams();
   const query = getParam(searchParams, "q");
   const area = getParam(searchParams, "area");
@@ -17,15 +18,15 @@ export default function RestaurantList() {
 
   const areas = useMemo(
     () => uniqueValues(restaurants, areaLabel).sort((a, b) => a.localeCompare(b, "ja")),
-    [],
+    [restaurants],
   );
   const genres = useMemo(
     () => uniqueValues(restaurants, (r) => r.genre).sort((a, b) => a.localeCompare(b, "ja")),
-    [],
+    [restaurants],
   );
   const priceRanges = useMemo(
     () => sortPriceRanges(uniqueValues(restaurants, (r) => r.priceRange)),
-    [],
+    [restaurants],
   );
 
   const filtered = restaurants.filter((restaurant) =>
@@ -89,7 +90,7 @@ export default function RestaurantList() {
         </div>
       </div>
 
-      <p className="count">{filtered.length}件</p>
+      <p className="count">{loading ? "読み込み中…" : `${filtered.length}件`}</p>
 
       {filtered.length === 0 ? (
         <p className="empty">条件に合う店はまだありません。</p>

@@ -1,13 +1,14 @@
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import gifts from "../data/gifts.json";
 import GiftCard from "../components/GiftCard.jsx";
 import ListHeader from "../components/ListHeader.jsx";
+import { useData } from "../data/DataProvider.jsx";
 import { matchesGift } from "../lib/gifts.js";
 import { uniqueValues } from "../lib/restaurants.js";
 import { getParam, setParam } from "../lib/urlState.js";
 
 export default function GiftList() {
+  const { gifts, loading } = useData();
   const [searchParams, setSearchParams] = useSearchParams();
   const query = getParam(searchParams, "q");
   const category = getParam(searchParams, "category");
@@ -17,14 +18,14 @@ export default function GiftList() {
 
   const categories = useMemo(
     () => uniqueValues(gifts, (item) => item.category).sort((a, b) => a.localeCompare(b, "ja")),
-    [],
+    [gifts],
   );
   const recipients = useMemo(
     () =>
       [...new Set(gifts.flatMap((item) => item.recipients).filter(Boolean))].sort((a, b) =>
         a.localeCompare(b, "ja"),
       ),
-    [],
+    [gifts],
   );
 
   const filtered = gifts.filter((gift) => matchesGift(gift, { category, recipient, query }));
@@ -73,7 +74,7 @@ export default function GiftList() {
         </div>
       </div>
 
-      <p className="count">{filtered.length}件</p>
+      <p className="count">{loading ? "読み込み中…" : `${filtered.length}件`}</p>
 
       {filtered.length === 0 ? (
         <p className="empty">条件に合う手土産・お取り寄せはまだありません。</p>

@@ -1,5 +1,5 @@
 import { Link, Navigate, useLocation, useParams } from "react-router-dom";
-import gifts from "../data/gifts.json";
+import { useData } from "../data/DataProvider.jsx";
 import { photoSrc } from "../lib/restaurants.js";
 
 function Section({ title, children }) {
@@ -15,8 +15,17 @@ function Section({ title, children }) {
 export default function GiftDetail() {
   const { id } = useParams();
   const location = useLocation();
+  const { gifts, loading } = useData();
   const gift = gifts.find((item) => item.id === id);
   const listPath = { pathname: "/gifts", search: location.state?.listSearch ?? "" };
+
+  if (loading) {
+    return (
+      <div className="page detail-page">
+        <p className="empty">読み込み中…</p>
+      </div>
+    );
+  }
 
   if (!gift) {
     return <Navigate to={listPath} replace />;

@@ -1,5 +1,5 @@
 import { Link, Navigate, useLocation, useParams } from "react-router-dom";
-import restaurants from "../data/restaurants.json";
+import { useData } from "../data/DataProvider.jsx";
 import { areaLabel, cardTags, isDogOk, photoSrc } from "../lib/restaurants.js";
 
 function Section({ title, children }) {
@@ -15,8 +15,17 @@ function Section({ title, children }) {
 export default function RestaurantDetail() {
   const { id } = useParams();
   const location = useLocation();
+  const { restaurants, loading } = useData();
   const restaurant = restaurants.find((item) => item.id === id);
   const listPath = { pathname: "/restaurants", search: location.state?.listSearch ?? "" };
+
+  if (loading) {
+    return (
+      <div className="page detail-page">
+        <p className="empty">読み込み中…</p>
+      </div>
+    );
+  }
 
   if (!restaurant) {
     return <Navigate to={listPath} replace />;
