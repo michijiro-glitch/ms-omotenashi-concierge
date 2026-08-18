@@ -314,20 +314,32 @@ function fillGiftForm_(form) {
 }
 
 function setEditToken() {
-  var ui = SpreadsheetApp.getUi();
-  var result = ui.prompt(
-    "アプリから直すときの合言葉",
-    "公開サイトで「直す」を押したときに入力します。他人には教えないでください。",
-    ui.ButtonSet.OK_CANCEL,
-  );
-  if (result.getSelectedButton() !== ui.Button.OK) return;
-  var token = String(result.getResponseText() || "").trim();
+  try {
+    var ui = SpreadsheetApp.getUi();
+    var result = ui.prompt(
+      "アプリから直すときの合言葉",
+      "公開サイトで「直す」を押したときに入力します。他人には教えないでください。",
+      ui.ButtonSet.OK_CANCEL,
+    );
+    if (result.getSelectedButton() !== ui.Button.OK) return;
+    var token = String(result.getResponseText() || "").trim();
+    if (!token) {
+      ui.alert("合言葉が空です。");
+      return;
+    }
+    PropertiesService.getScriptProperties().setProperty("EDIT_TOKEN", token);
+    ui.alert("合言葉を保存しました。");
+  } catch (error) {
+    throw new Error("Apps Script の実行ボタンでは設定できません。関数名を setEditTokenFromEditor にするか、スプレッドシートのメニューから設定してください。");
+  }
+}
+
+function setEditTokenFromEditor() {
+  var token = ""; // この "" の中に合言葉を書いてから実行する。終わったら空に戻す。
   if (!token) {
-    ui.alert("合言葉が空です。");
-    return;
+    throw new Error('上の token = "" の中に合言葉を書いてから、もう一度実行してください。');
   }
   PropertiesService.getScriptProperties().setProperty("EDIT_TOKEN", token);
-  ui.alert("合言葉を保存しました。");
 }
 
 function doPost(e) {
