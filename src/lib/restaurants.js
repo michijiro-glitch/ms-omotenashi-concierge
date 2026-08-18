@@ -7,7 +7,8 @@ export function photoSrc(photo) {
   const src = typeof photo === "string" ? photo : photo.src;
   if (!src) return "";
   if (src.startsWith("http://") || src.startsWith("https://")) return src;
-  return `/photos/${src.replace(/^\/+/, "")}`;
+  const file = src.replace(/^\/+/, "").replace(/^photos\//, "");
+  return `${import.meta.env.BASE_URL}photos/${file}`;
 }
 
 export function firstPhoto(restaurant) {

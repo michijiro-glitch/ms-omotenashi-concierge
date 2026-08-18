@@ -7,7 +7,7 @@ export default function Home() {
         <h1>
           <img
             className="brand-logo"
-            src="/logo.png?v=3"
+            src={`${import.meta.env.BASE_URL}logo.png?v=3`}
             alt="M's Omotenashi Concierge"
           />
         </h1>
