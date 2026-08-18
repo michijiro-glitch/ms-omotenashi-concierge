@@ -85,7 +85,10 @@ export function toNumberOrNull(value) {
 
 export function drivePhotoUrls(value) {
   const text = String(value || "");
-  const ids = [...text.matchAll(/[?&]id=([a-zA-Z0-9_-]+)/g)].map((match) => match[1]);
+  const ids = [
+    ...text.matchAll(/[?&]id=([a-zA-Z0-9_-]+)/g),
+    ...text.matchAll(/\/file\/d\/([a-zA-Z0-9_-]+)/g),
+  ].map((match) => match[1]);
   const unique = [...new Set(ids)];
   return unique.map((id) => `https://drive.google.com/thumbnail?id=${id}&sz=w1600`);
 }

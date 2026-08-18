@@ -6,3 +6,4 @@ dist
 .env.*
 !.env.example
 _raw.json
+_sheet_inspect/

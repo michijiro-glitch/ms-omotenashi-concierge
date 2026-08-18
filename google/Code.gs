@@ -1,84 +1,205 @@
 /**
- * レストランの質問が「吉夏」などに変わってしまったときは、
- * 上の関数名を resetRestaurantForm にして実行する。
+ * 手土産を進めるときは、関数名を resetGiftForm にして実行する。
+ * 写真の自動変換は、そのあと setupOnce を実行する。
  * createForms は使わない（項目が二重になる）。
  */
 var SPREADSHEET_ID = "1sJucCTSK8oxWaS2U2JymEGOAVcf7Dv8DUmK8GkV68-g";
 var RESTAURANT_FORM_ID = "1rJtytnT-ae7xADcK1YAmvYD9UT3CmpIFZRJF-bZotiM";
+var GIFT_FORM_ID = "1sNEqXBwg-rqq5gJW3ixIYbs2eX3MD1dYltG0ksXqzuA";
+
+function resetGiftForm() {
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var log = ensureSettings_(ss);
+  log.clear();
+  log.getRange("A1").setValue("手土産フォームを整えています " + new Date());
+  SpreadsheetApp.flush();
+
+  var giftForm = findGiftForm_(ss);
+  if (!giftForm) {
+    log.getRange("A2").setValue("手土産フォームが見つからないので新規作成します");
+    SpreadsheetApp.flush();
+    giftForm = FormApp.create("M's Omotenashi Concierge｜手土産・お取り寄せ");
+    fillGiftForm_(giftForm);
+    linkForm_(ss, giftForm, "手土産入力");
+  } else {
+    clearFormItems_(giftForm);
+    giftForm.setTitle("M's Omotenashi Concierge｜手土産・お取り寄せ");
+    fillGiftForm_(giftForm);
+  }
+
+  writeSettings_(ss, log);
+}
 
 function resetRestaurantForm() {
   var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  var log = ss.getSheetByName("設定") || ss.insertSheet("設定", 0);
-  log.clear();
-  log.getRange("A1").setValue("レストランフォームをリセットします " + new Date());
-  SpreadsheetApp.flush();
-
+  var log = ensureSettings_(ss);
   var form = FormApp.openById(RESTAURANT_FORM_ID);
   clearFormItems_(form);
   form.setTitle("M's Omotenashi Concierge｜レストラン");
   fillRestaurantForm_(form);
-
-  log.getRange("A1:B4").setValues([
-    ["項目", "内容"],
-    ["更新日時", new Date()],
-    ["入力URL", form.getPublishedUrl()],
-    ["編集URL", form.getEditUrl()],
-  ]);
-  log.setColumnWidth(1, 240);
-  log.setColumnWidth(2, 560);
-  SpreadsheetApp.flush();
+  writeSettings_(ss, log);
 }
 
-function createForms() {
+function writeSettingsNow() {
   var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  var log = ss.getSheetByName("設定") || ss.insertSheet("設定", 0);
-  log.clear();
-  log.getRange("A1").setValue("開始 " + new Date());
-  SpreadsheetApp.flush();
+  writeSettings_(ss, ensureSettings_(ss));
+}
 
-  try {
-    log.getRange("A2").setValue("指定のレストランフォームを更新します");
-    SpreadsheetApp.flush();
+function onOpen() {
+  SpreadsheetApp.getUi()
+    .createMenu("Omotenashi")
+    .addItem("手土産フォームを整える", "resetGiftForm")
+    .addItem("レストランフォームを整える", "resetRestaurantForm")
+    .addItem("準備（写真の自動変換）", "setupOnce")
+    .addItem("写真URLをすべて更新", "processAllRows")
+    .addItem("入力URLを設定タブに書く", "writeSettingsNow")
+    .addToUi();
+}
 
-    var restaurantForm = FormApp.openById(RESTAURANT_FORM_ID);
-    clearFormItems_(restaurantForm);
-    restaurantForm.setTitle("M's Omotenashi Concierge｜レストラン");
-    fillRestaurantForm_(restaurantForm);
+function setupOnce() {
+  var ss = getSpreadsheet_();
+  ScriptApp.getProjectTriggers().forEach(function (trigger) {
+    ScriptApp.deleteTrigger(trigger);
+  });
+  ScriptApp.newTrigger("afterFormSubmit").forSpreadsheet(ss).onFormSubmit().create();
+  processAllRows();
+  var log = ensureSettings_(ss);
+  log.getRange("A12").setValue("写真の自動変換");
+  log.getRange("B12").setValue("準備できました " + new Date());
+}
 
-    var giftForm = null;
-    ss.getSheets().forEach(function (sheet) {
-      var url = sheet.getFormUrl();
-      if (!url) return;
-      var form = FormApp.openByUrl(url);
-      if (form.getId() === RESTAURANT_FORM_ID) return;
-      giftForm = form;
-    });
+function afterFormSubmit(e) {
+  if (!e || !e.range) return;
+  processRow(e.range.getSheet(), e.range.getRow());
+}
 
-    if (giftForm) {
-      log.getRange("A3").setValue("手土産フォームを更新します");
-      SpreadsheetApp.flush();
-      clearFormItems_(giftForm);
-      giftForm.setTitle("M's Omotenashi Concierge｜手土産・お取り寄せ");
-      fillGiftForm_(giftForm);
-    } else {
-      log.getRange("A3").setValue("手土産フォームが見つからないので新規作成します");
-      SpreadsheetApp.flush();
-      giftForm = FormApp.create("M's Omotenashi Concierge｜手土産・お取り寄せ");
-      fillGiftForm_(giftForm);
-      linkForm_(ss, giftForm, "手土産入力");
+function processAllRows() {
+  var ss = getSpreadsheet_();
+  ss.getSheets().forEach(function (sheet) {
+    if (sheet.getName() === "設定") return;
+    var last = sheet.getLastRow();
+    var row;
+    for (row = 2; row <= last; row++) {
+      processRow(sheet, row);
     }
+  });
+}
 
-    writeSettings_(ss, log);
-  } catch (error) {
-    log.getRange("A10").setValue("エラー");
-    log.getRange("B10").setValue(String(error && error.stack ? error.stack : error));
-    SpreadsheetApp.flush();
-    throw error;
+function processRow(sheet, row) {
+  if (sheet.getName() === "設定") return;
+  var headers = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), 1)).getValues()[0];
+  ensureHeader(sheet, headers, "id");
+  var headersAfterId = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  ensureHeader(sheet, headersAfterId, "写真表示URL");
+  var latestHeaders = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  var values = sheet.getRange(row, 1, 1, latestHeaders.length).getValues()[0];
+  var record = {};
+  latestHeaders.forEach(function (name, index) {
+    var key = String(name);
+    var value = values[index];
+    if (record[key] === undefined || String(record[key]).trim() === "") {
+      record[key] = value;
+    } else if (String(value).trim() !== "") {
+      record[key] = value;
+    }
+  });
+
+  var name = String(record["店名"] || record["商品名"] || "").trim();
+  if (!name) return;
+
+  var idCol = latestHeaders.indexOf("id") + 1;
+  if (idCol && !String(record["id"] || "").trim()) {
+    sheet.getRange(row, idCol).setValue(name);
   }
+
+  var photoCol = latestHeaders.indexOf("写真表示URL") + 1;
+  if (!photoCol) return;
+
+  var ids = [];
+  latestHeaders.forEach(function (name, index) {
+    if (String(name) !== "写真") return;
+    extractFromCell_(sheet, row, index + 1).forEach(function (id) {
+      if (ids.indexOf(id) === -1) ids.push(id);
+    });
+  });
+  if (ids.length === 0) return;
+
+  var urls = ids.map(function (id) {
+    try {
+      DriveApp.getFileById(id).setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    } catch (error) {}
+    return "https://drive.google.com/thumbnail?id=" + id + "&sz=w1600";
+  });
+  sheet.getRange(row, photoCol).setValue(urls.join(", "));
+}
+
+function extractFromCell_(sheet, row, col) {
+  var range = sheet.getRange(row, col);
+  var ids = extractDriveIds(range.getValue());
+  var rich = range.getRichTextValue();
+  if (rich) {
+    collectLink_(ids, rich.getLinkUrl());
+    rich.getRuns().forEach(function (run) {
+      collectLink_(ids, run.getLinkUrl());
+    });
+  }
+  return ids;
+}
+
+function collectLink_(ids, link) {
+  extractDriveIds(link).forEach(function (id) {
+    if (ids.indexOf(id) === -1) ids.push(id);
+  });
+}
+
+function extractDriveIds(value) {
+  var text = String(value || "");
+  var ids = [];
+  var patterns = [/[?&]id=([a-zA-Z0-9_-]+)/g, /\/file\/d\/([a-zA-Z0-9_-]+)/g];
+  var p;
+  var match;
+  for (p = 0; p < patterns.length; p++) {
+    while ((match = patterns[p].exec(text))) {
+      if (ids.indexOf(match[1]) === -1) ids.push(match[1]);
+    }
+  }
+  return ids;
+}
+
+function ensureHeader(sheet, headers, name) {
+  if (headers.indexOf(name) !== -1) return;
+  var col = sheet.getLastColumn() + 1;
+  sheet.getRange(1, col).setValue(name);
+}
+
+function getSpreadsheet_() {
+  return SpreadsheetApp.openById(SPREADSHEET_ID);
+}
+
+function ensureSettings_(ss) {
+  return ss.getSheetByName("設定") || ss.insertSheet("設定", 0);
+}
+
+function findGiftForm_(ss) {
+  try {
+    if (GIFT_FORM_ID) return FormApp.openById(GIFT_FORM_ID);
+  } catch (error) {}
+  var found = null;
+  ss.getSheets().forEach(function (sheet) {
+    var url = sheet.getFormUrl();
+    if (!url) return;
+    var form = FormApp.openByUrl(url);
+    if (form.getId() === RESTAURANT_FORM_ID) return;
+    found = form;
+  });
+  return found;
 }
 
 function writeSettings_(ss, log) {
-  var rows = [["項目", "内容"], ["更新日時", new Date()]];
+  var rows = [
+    ["項目", "内容"],
+    ["更新日時", new Date()],
+  ];
   ss.getSheets().forEach(function (sheet) {
     var url = sheet.getFormUrl();
     if (!url) return;
@@ -86,6 +207,8 @@ function writeSettings_(ss, log) {
     rows.push([sheet.getName() + " 入力URL", form.getPublishedUrl()]);
     rows.push([sheet.getName() + " 編集URL", form.getEditUrl()]);
   });
+  rows.push(["写真の付け方", "各フォームの編集画面で質問を追加し、種類を「ファイルのアップロード」、タイトルを「写真」にする。必須にしない。最大5枚。"]);
+  rows.push(["入力するとき", "アドレスが preview で終わっていたら viewform に変える。Googleにログインした状態で送る。"]);
   log.clear();
   log.getRange(1, 1, rows.length, 2).setValues(rows);
   log.setColumnWidth(1, 240);
@@ -128,7 +251,7 @@ function linkForm_(ss, form, sheetName) {
 }
 
 function fillRestaurantForm_(form) {
-  form.setDescription("実際に行った店、または行ってみたい店を登録します。iPhoneでは写真をその場で撮れます。");
+  form.setDescription("実際に行った店、または行ってみたい店を登録します。写真は編集画面で「ファイルのアップロード」を追加してください。");
   form.setCollectEmail(false);
   form.addTextItem().setTitle("店名").setRequired(true);
   form.addMultipleChoiceItem().setTitle("ステータス").setChoiceValues(["行ったことがある", "行ってみたい"]).setRequired(true);
@@ -162,7 +285,6 @@ function fillRestaurantForm_(form) {
   form.addTextItem().setTitle("ひとこと評価");
   form.addParagraphTextItem().setTitle("自由メモ");
   form.addDateItem().setTitle("最終訪問日");
-  addPhotoItem_(form);
   form.addTextItem().setTitle("公式HP URL");
   form.addTextItem().setTitle("食べログURL");
   form.addTextItem().setTitle("予約URL");
@@ -172,7 +294,7 @@ function fillRestaurantForm_(form) {
 }
 
 function fillGiftForm_(form) {
-  form.setDescription("贈ったもの、取り寄せたものを登録します。iPhoneでは写真をその場で撮れます。");
+  form.setDescription("贈ったもの、取り寄せたものを登録します。写真は編集画面で「ファイルのアップロード」を追加してください。");
   form.setCollectEmail(false);
   form.addTextItem().setTitle("商品名").setRequired(true);
   form.addTextItem().setTitle("店名・ブランド");
@@ -185,108 +307,7 @@ function fillGiftForm_(form) {
   form.addTextItem().setTitle("購入先URL");
   form.addParagraphTextItem().setTitle("おすすめポイント");
   form.addParagraphTextItem().setTitle("注意点・メモ");
-  addPhotoItem_(form);
   form.addTextItem().setTitle("メディア掲載名");
   form.addTextItem().setTitle("メディア掲載URL");
   form.addMultipleChoiceItem().setTitle("また使いたい度").setChoiceValues(["1", "2", "3", "4", "5"]);
-}
-
-function addPhotoItem_(form) {
-  try {
-    var item = form.addFileUploadItem();
-    item.setTitle("写真");
-    item.setHelpText("iPhoneでは「ファイルを追加」→「写真を撮る」。最大5枚。");
-    item.setMaxFiles(5);
-  } catch (error) {
-    form.addParagraphTextItem().setTitle("写真").setHelpText("今は空欄で構いません。");
-  }
-}
-
-function onOpen() {
-  SpreadsheetApp.getUi()
-    .createMenu("Omotenashi")
-    .addItem("1. フォームに質問を入れる", "createForms")
-    .addItem("2. 準備（初回）", "setupOnce")
-    .addItem("写真URLをすべて更新", "processAllRows")
-    .addToUi();
-}
-
-function getSpreadsheet_() {
-  return SpreadsheetApp.openById(SPREADSHEET_ID);
-}
-
-function setupOnce() {
-  var ss = getSpreadsheet_();
-  ScriptApp.getProjectTriggers().forEach(function (trigger) {
-    ScriptApp.deleteTrigger(trigger);
-  });
-  ScriptApp.newTrigger("afterFormSubmit").forSpreadsheet(ss).onFormSubmit().create();
-  processAllRows();
-}
-
-function afterFormSubmit(e) {
-  if (!e || !e.range) return;
-  processRow(e.range.getSheet(), e.range.getRow());
-}
-
-function processAllRows() {
-  var ss = getSpreadsheet_();
-  ss.getSheets().forEach(function (sheet) {
-    var last = sheet.getLastRow();
-    var row;
-    for (row = 2; row <= last; row++) {
-      processRow(sheet, row);
-    }
-  });
-}
-
-function processRow(sheet, row) {
-  var headers = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), 1)).getValues()[0];
-  ensureHeader(sheet, headers, "id");
-  var headersAfterId = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-  ensureHeader(sheet, headersAfterId, "写真表示URL");
-  var latestHeaders = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-  var values = sheet.getRange(row, 1, 1, latestHeaders.length).getValues()[0];
-  var record = {};
-  latestHeaders.forEach(function (name, index) {
-    record[String(name)] = values[index];
-  });
-
-  var name = String(record["店名"] || record["商品名"] || "").trim();
-  if (!name) return;
-
-  var idCol = latestHeaders.indexOf("id") + 1;
-  if (idCol && !String(record["id"] || "").trim()) {
-    sheet.getRange(row, idCol).setValue(name);
-  }
-
-  var photoCol = latestHeaders.indexOf("写真表示URL") + 1;
-  var rawPhoto = String(record["写真"] || "");
-  var ids = extractDriveIds(rawPhoto);
-  if (!photoCol || ids.length === 0) return;
-
-  var urls = ids.map(function (id) {
-    try {
-      DriveApp.getFileById(id).setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-    } catch (error) {}
-    return "https://drive.google.com/thumbnail?id=" + id + "&sz=w1600";
-  });
-  sheet.getRange(row, photoCol).setValue(urls.join(", "));
-}
-
-function ensureHeader(sheet, headers, name) {
-  if (headers.indexOf(name) !== -1) return;
-  var col = sheet.getLastColumn() + 1;
-  sheet.getRange(1, col).setValue(name);
-}
-
-function extractDriveIds(value) {
-  var text = String(value || "");
-  var ids = [];
-  var re = /[?&]id=([a-zA-Z0-9_-]+)/g;
-  var match;
-  while ((match = re.exec(text))) {
-    if (ids.indexOf(match[1]) === -1) ids.push(match[1]);
-  }
-  return ids;
 }
