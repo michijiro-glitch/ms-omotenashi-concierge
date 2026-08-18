@@ -309,6 +309,133 @@ h2,
   color: var(--ink-soft);
 }
 
+.edit-link {
+  display: inline-block;
+  margin: 0 0 24px 18px;
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.edit-note {
+  margin: 0 0 20px;
+  color: var(--ink-soft);
+  font-size: 13px;
+}
+
+.edit-form {
+  display: grid;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.edit-field {
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.edit-field span {
+  color: var(--ink-soft);
+  font-size: 13px;
+}
+
+.edit-field input,
+.edit-field select,
+.edit-field textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+}
+
+.edit-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+}
+
+.edit-check {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 14px;
+}
+
+.edit-error {
+  margin: 0;
+  color: var(--accent);
+}
+
+.edit-submit {
+  justify-self: start;
+  padding: 10px 18px;
+  border: 0;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.edit-submit:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.edit-photos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.edit-photo {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--paper-deep);
+}
+
+.edit-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.edit-photo-remove {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  padding: 4px 8px;
+  border: 0;
+  background: rgba(43, 36, 28, 0.82);
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.edit-photo-add {
+  position: relative;
+  justify-self: start;
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.edit-photo-add input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
 .detail-page {
   width: min(760px, calc(100% - 48px));
 }

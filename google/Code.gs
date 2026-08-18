@@ -53,6 +53,7 @@ function onOpen() {
     .addItem("準備（写真の自動変換）", "setupOnce")
     .addItem("写真URLをすべて更新", "processAllRows")
     .addItem("入力URLを設定タブに書く", "writeSettingsNow")
+    .addItem("アプリ編集の合言葉を設定", "setEditToken")
     .addToUi();
 }
 
@@ -311,3 +312,216 @@ function fillGiftForm_(form) {
   form.addTextItem().setTitle("メディア掲載URL");
   form.addMultipleChoiceItem().setTitle("また使いたい度").setChoiceValues(["1", "2", "3", "4", "5"]);
 }
+
+function setEditToken() {
+  var ui = SpreadsheetApp.getUi();
+  var result = ui.prompt(
+    "アプリから直すときの合言葉",
+    "公開サイトで「直す」を押したときに入力します。他人には教えないでください。",
+    ui.ButtonSet.OK_CANCEL,
+  );
+  if (result.getSelectedButton() !== ui.Button.OK) return;
+  var token = String(result.getResponseText() || "").trim();
+  if (!token) {
+    ui.alert("合言葉が空です。");
+    return;
+  }
+  PropertiesService.getScriptProperties().setProperty("EDIT_TOKEN", token);
+  ui.alert("合言葉を保存しました。");
+}
+
+function doPost(e) {
+  return jsonOutput_(handleEditRequest_(e && e.postData ? e.postData.contents : ""));
+}
+
+function doGet() {
+  return jsonOutput_({ ok: true, service: "omotenashi-edit" });
+}
+
+function handleEditRequest_(raw) {
+  var body;
+  try {
+    body = JSON.parse(String(raw || ""));
+  } catch (error) {
+    return { ok: false, error: "内容を読み取れませんでした。" };
+  }
+
+  var expected = PropertiesService.getScriptProperties().getProperty("EDIT_TOKEN");
+  if (!expected) {
+    return { ok: false, error: "合言葉がまだ設定されていません。メニューから設定してください。" };
+  }
+  if (String(body.token || "") !== expected) {
+    return { ok: false, error: "合言葉が違います。" };
+  }
+
+  var kind = body.kind === "gift" ? "gift" : "restaurant";
+  var updated = updateItem_(kind, String(body.id || ""), body.fields || {}, body.photos);
+  if (!updated) {
+    return { ok: false, error: "シートにこの件が見つかりません。フォームから送ったものだけ直せます。" };
+  }
+  return { ok: true };
+}
+
+function jsonOutput_(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.TEXT);
+}
+
+function lastIndex_(headers, name) {
+  var index = -1;
+  var i;
+  for (i = 0; i < headers.length; i++) {
+    if (String(headers[i]) === name) index = i;
+  }
+  return index;
+}
+
+function updateItem_(kind, id, fields, photos) {
+  var nameHeader = kind === "gift" ? "商品名" : "店名";
+  var map = kind === "gift" ? GIFT_FIELD_MAP_ : RESTAURANT_FIELD_MAP_;
+  var ss = getSpreadsheet_();
+  var sheets = ss.getSheets();
+  var s;
+  for (s = 0; s < sheets.length; s++) {
+    var sheet = sheets[s];
+    if (sheet.getName() === "設定") continue;
+    var lastCol = Math.max(sheet.getLastColumn(), 1);
+    var lastRow = sheet.getLastRow();
+    if (lastRow < 2) continue;
+    var headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+    if (lastIndex_(headers, nameHeader) < 0) continue;
+    var row = findItemRow_(sheet, headers, lastRow, id, nameHeader);
+    if (!row) continue;
+    applyFields_(sheet, headers, row, map, fields);
+    if (photos) applyPhotos_(sheet, row, photos);
+    return true;
+  }
+  return false;
+}
+
+function getPhotoFolder_() {
+  var name = "M's Omotenashi Concierge 写真";
+  var folders = DriveApp.getFoldersByName(name);
+  if (folders.hasNext()) return folders.next();
+  return DriveApp.createFolder(name);
+}
+
+function stripBase64_(data) {
+  var text = String(data || "");
+  var comma = text.indexOf(",");
+  if (text.indexOf("base64") >= 0 && comma >= 0) return text.slice(comma + 1);
+  return text;
+}
+
+function applyPhotos_(sheet, row, photos) {
+  var list = photos;
+  if (Object.prototype.toString.call(list) !== "[object Array]") list = [];
+  if (list.length > 5) list = list.slice(0, 5);
+
+  var headers = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), 1)).getValues()[0];
+  ensureHeader(sheet, headers, "写真");
+  headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  ensureHeader(sheet, headers, "写真表示URL");
+  headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+
+  var folder = getPhotoFolder_();
+  var ids = [];
+  var i;
+  for (i = 0; i < list.length; i++) {
+    var item = list[i] || {};
+    if (item.data) {
+      var decoded = Utilities.base64Decode(stripBase64_(item.data));
+      var blob = Utilities.newBlob(decoded, item.mimeType || "image/jpeg", item.name || "photo.jpg");
+      var file = folder.createFile(blob);
+      try {
+        file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+      } catch (error) {}
+      ids.push(file.getId());
+      continue;
+    }
+    var kept = extractDriveIds(item.id || item.url || "");
+    if (item.id && ids.indexOf(item.id) === -1 && String(item.id).indexOf("http") !== 0) {
+      ids.push(String(item.id));
+    }
+    kept.forEach(function (id) {
+      if (ids.indexOf(id) === -1) ids.push(id);
+    });
+  }
+
+  var openUrls = ids.map(function (id) {
+    return "https://drive.google.com/open?id=" + id;
+  });
+  var viewUrls = ids.map(function (id) {
+    return "https://drive.google.com/thumbnail?id=" + id + "&sz=w1600";
+  });
+  var photoCol = lastIndex_(headers, "写真") + 1;
+  var viewCol = lastIndex_(headers, "写真表示URL") + 1;
+  if (photoCol) sheet.getRange(row, photoCol).setValue(openUrls.join(", "));
+  if (viewCol) sheet.getRange(row, viewCol).setValue(viewUrls.join(", "));
+}
+
+function findItemRow_(sheet, headers, lastRow, id, nameHeader) {
+  var idCol = lastIndex_(headers, "id");
+  var nameCol = lastIndex_(headers, nameHeader);
+  var values = sheet.getRange(2, 1, lastRow - 1, headers.length).getValues();
+  var i;
+  for (i = 0; i < values.length; i++) {
+    var rowId = idCol >= 0 ? String(values[i][idCol] || "").trim() : "";
+    var rowName = nameCol >= 0 ? String(values[i][nameCol] || "").trim() : "";
+    if (rowId === id || rowName === id) return i + 2;
+  }
+  return 0;
+}
+
+function applyFields_(sheet, headers, row, map, fields) {
+  Object.keys(map).forEach(function (key) {
+    if (!Object.prototype.hasOwnProperty.call(fields, key)) return;
+    var col = lastIndex_(headers, map[key]);
+    if (col < 0) return;
+    var value = fields[key];
+    if (Object.prototype.toString.call(value) === "[object Array]") {
+      value = value.filter(Boolean).join("、");
+    }
+    if (value === null || value === undefined) value = "";
+    sheet.getRange(row, col + 1).setValue(value);
+  });
+}
+
+var RESTAURANT_FIELD_MAP_ = {
+  name: "店名",
+  status: "ステータス",
+  region: "地域区分",
+  tokyoArea: "都内エリア",
+  otherArea: "地方・海外エリア",
+  genre: "ジャンル",
+  priceRange: "価格帯",
+  formality: "フォーマル度",
+  scenes: "利用シーン",
+  moods: "雰囲気",
+  dogPolicy: "犬連れ",
+  recommend: "おすすめポイント",
+  caution: "注意点",
+  oneLiner: "ひとこと評価",
+  memo: "自由メモ",
+  lastVisit: "最終訪問日",
+  officialUrl: "公式HP URL",
+  tabelogUrl: "食べログURL",
+  reserveUrl: "予約URL",
+  mediaName: "メディア掲載名",
+  mediaUrl: "メディア掲載URL",
+  wantToGoAgain: "また行きたい度",
+};
+
+var GIFT_FIELD_MAP_ = {
+  name: "商品名",
+  brand: "店名・ブランド",
+  category: "カテゴリ",
+  priceRange: "価格帯",
+  recipients: "向いている相手・用途",
+  keeping: "日持ち・保存",
+  purchaseUrl: "購入先URL",
+  recommend: "おすすめポイント",
+  caution: "注意点・メモ",
+  mediaName: "メディア掲載名",
+  mediaUrl: "メディア掲載URL",
+  wantToUseAgain: "また使いたい度",
+};

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import localGifts from "../data/gifts.json";
 import localRestaurants from "../data/restaurants.json";
 import { loadGifts, loadRestaurants } from "../lib/loadData.js";
@@ -10,25 +10,31 @@ export function DataProvider({ children }) {
   const [gifts, setGifts] = useState(localGifts);
   const [loading, setLoading] = useState(true);
   const [source, setSource] = useState("local");
+  const mounted = useRef(true);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    Promise.all([loadRestaurants(localRestaurants), loadGifts(localGifts)]).then(([restaurantResult, giftResult]) => {
-      if (cancelled) return;
-      setRestaurants(restaurantResult.items);
-      setGifts(giftResult.items);
-      setSource(restaurantResult.source === "sheet" || giftResult.source === "sheet" ? "sheet" : "local");
-      setLoading(false);
-    });
-
-    return () => {
-      cancelled = true;
-    };
+  const reload = useCallback(async () => {
+    setLoading(true);
+    const [restaurantResult, giftResult] = await Promise.all([
+      loadRestaurants(localRestaurants),
+      loadGifts(localGifts),
+    ]);
+    if (!mounted.current) return;
+    setRestaurants(restaurantResult.items);
+    setGifts(giftResult.items);
+    setSource(restaurantResult.source === "sheet" || giftResult.source === "sheet" ? "sheet" : "local");
+    setLoading(false);
   }, []);
 
+  useEffect(() => {
+    mounted.current = true;
+    reload();
+    return () => {
+      mounted.current = false;
+    };
+  }, [reload]);
+
   return (
-    <DataContext.Provider value={{ restaurants, gifts, loading, source }}>
+    <DataContext.Provider value={{ restaurants, gifts, loading, source, reload }}>
       {children}
     </DataContext.Provider>
   );

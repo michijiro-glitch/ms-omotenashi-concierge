@@ -2,7 +2,8 @@ import { parseCsv } from "./csv.js";
 import { mapGifts, mapRestaurants } from "./sheetMap.js";
 
 async function fetchCsv(url) {
-  const response = await fetch(url);
+  const joiner = url.includes("?") ? "&" : "?";
+  const response = await fetch(`${url}${joiner}_=${Date.now()}`);
   if (!response.ok) {
     throw new Error(`CSV ${response.status}`);
   }
