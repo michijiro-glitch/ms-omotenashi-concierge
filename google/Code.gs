@@ -1,11 +1,24 @@
 /**
- * 手土産を進めるときは、関数名を resetGiftForm にして実行する。
- * 写真の自動変換は、そのあと setupOnce を実行する。
- * createForms は使わない（項目が二重になる）。
+ * 最初の6件をシートへ移すときは、関数名を importSeedData にして実行する。
+ * createForms は使わない。
  */
 var SPREADSHEET_ID = "1sJucCTSK8oxWaS2U2JymEGOAVcf7Dv8DUmK8GkV68-g";
 var RESTAURANT_FORM_ID = "1rJtytnT-ae7xADcK1YAmvYD9UT3CmpIFZRJF-bZotiM";
 var GIFT_FORM_ID = "1sNEqXBwg-rqq5gJW3ixIYbs2eX3MD1dYltG0ksXqzuA";
+
+function importSeedData() {
+  var restaurantSheet = findSheetByGid_(89270631);
+  var giftSheet = findSheetByGid_(1989527302);
+  if (!restaurantSheet || !giftSheet) {
+    throw new Error("アプリが読んでいる回答タブが見つかりません。");
+  }
+
+  var addedRestaurants = importItems_(restaurantSheet, "店名", RESTAURANT_FIELD_MAP_, SEED_RESTAURANTS_);
+  var addedGifts = importItems_(giftSheet, "商品名", GIFT_FIELD_MAP_, SEED_GIFTS_);
+  var log = ensureSettings_(getSpreadsheet_());
+  log.getRange("A14").setValue("初期データの移行");
+  log.getRange("B14").setValue("店 " + addedRestaurants + "件、手土産 " + addedGifts + "件 " + new Date());
+}
 
 function resetGiftForm() {
   var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
@@ -54,6 +67,7 @@ function onOpen() {
     .addItem("写真URLをすべて更新", "processAllRows")
     .addItem("入力URLを設定タブに書く", "writeSettingsNow")
     .addItem("アプリ編集の合言葉を設定", "setEditToken")
+    .addItem("最初の店と手土産をシートへ移す", "importSeedData")
     .addToUi();
 }
 
@@ -537,3 +551,193 @@ var GIFT_FIELD_MAP_ = {
   mediaUrl: "メディア掲載URL",
   wantToUseAgain: "また使いたい度",
 };
+
+function findSheetByGid_(gid) {
+  var sheets = getSpreadsheet_().getSheets();
+  var i;
+  for (i = 0; i < sheets.length; i++) {
+    if (sheets[i].getSheetId() === gid) return sheets[i];
+  }
+  return null;
+}
+
+function importItems_(sheet, nameHeader, map, items) {
+  var headers = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), 1)).getValues()[0];
+  ensureHeader(sheet, headers, "id");
+  headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  var existing = {};
+  var lastRow = sheet.getLastRow();
+  if (lastRow >= 2) {
+    var nameCol = lastIndex_(headers, nameHeader);
+    var idCol = lastIndex_(headers, "id");
+    var values = sheet.getRange(2, 1, lastRow - 1, headers.length).getValues();
+    var r;
+    for (r = 0; r < values.length; r++) {
+      if (nameCol >= 0) existing[String(values[r][nameCol] || "").trim()] = true;
+      if (idCol >= 0) existing[String(values[r][idCol] || "").trim()] = true;
+    }
+  }
+
+  var added = 0;
+  var i;
+  for (i = 0; i < items.length; i++) {
+    var item = items[i];
+    if (existing[item.name] || existing[item.id]) continue;
+    var row = Math.max(sheet.getLastRow() + 1, 2);
+    applyFields_(sheet, headers, row, map, item);
+    var idColWrite = lastIndex_(headers, "id") + 1;
+    if (idColWrite) sheet.getRange(row, idColWrite).setValue(item.id);
+    existing[item.name] = true;
+    existing[item.id] = true;
+    added += 1;
+  }
+  return added;
+}
+
+var SEED_RESTAURANTS_ = [
+  {
+    id: "hachisenbo-ebisu",
+    name: "華千房恵比寿ガーデンプレイス支店",
+    status: "行ったことがある",
+    region: "東京",
+    tokyoArea: "恵比寿",
+    genre: "鉄板焼",
+    priceRange: "12,000〜20,000円",
+    formality: "上質カジュアル",
+    scenes: ["友人", "仕事の会食"],
+    moods: ["眺望が良い"],
+    dogPolicy: "要確認",
+    recommend: "38階からの絶景を眺めながら目の前で焼いてくれる鉄板焼きを楽しめる。",
+    caution: "テーブル席は4人まで",
+    oneLiner: "10800円の華コースはオマールエビ、活アワビ、サーロインステーキ、お好み焼きハーフサイズついてコスパよし",
+    memo: "ステーキは50グラム程度で小さいが色々出てくるので十分お腹いっぱいになる",
+    lastVisit: "2026-08-10",
+    officialUrl: "https://shop.chibo.com/detail/15/",
+    tabelogUrl: "https://tabelog.com/tokyo/A1303/A130302/13004492/",
+    wantToGoAgain: 5,
+  },
+  {
+    id: "apicius",
+    name: "アピシウス",
+    status: "行ったことがある",
+    region: "東京",
+    tokyoArea: "有楽町",
+    genre: "フレンチ",
+    priceRange: "20,000円〜",
+    formality: "フォーマル",
+    scenes: ["重要な接待", "記念日"],
+    moods: ["落ち着いている", "個室あり"],
+    dogPolicy: "要確認",
+    recommend: "伝統あるフランス料理とワインを最高のサービスで。",
+    caution: "コースも良いが、神髄を楽しむならアラカルトで。一流店なのでゲスト用メニューには価格表記ナシ。",
+    oneLiner: "名物半生ステーキ　ビトークが最高",
+    memo: "魚のスープ（スープドポワソン）はハーフサイズも可能",
+    lastVisit: "2026-08-05",
+    officialUrl: "https://apicius.co.jp/",
+    wantToGoAgain: 5,
+  },
+  {
+    id: "sisi",
+    name: "SISI",
+    status: "行ったことがある",
+    region: "東京",
+    tokyoArea: "六本木",
+    genre: "焼肉",
+    priceRange: "12,000〜20,000円",
+    formality: "上質カジュアル",
+    scenes: ["仕事の会食", "友人"],
+    moods: ["隠れ家", "個室あり"],
+    dogPolicy: "要確認",
+    recommend: "落ち着いた個室で最高級の焼肉をお店の人が焼いてくれる",
+    caution: "モツやユッケなど苦手な人は別の者に変えてもらう",
+    oneLiner: "最後に出てくるおでんが美味しい",
+    memo: "シメの冷麺やゴハンは大中小から選べる、大でも小さ目なので複数頼むのもOK",
+    lastVisit: "2026-08-04",
+    wantToGoAgain: 4,
+  },
+  {
+    id: "konexioa",
+    name: "KONEXIOA",
+    status: "行ってみたい",
+    region: "東京",
+    tokyoArea: "中目黒",
+    genre: "スペイン料理",
+    priceRange: "12,000〜20,000円",
+    formality: "上質カジュアル",
+    scenes: ["友人"],
+    moods: ["隠れ家"],
+    dogPolicy: "要確認",
+    recommend: "エクラにて紹介",
+    caution: "駅から遠いのでやや不便",
+    officialUrl: "https://konexioa.jp/",
+    tabelogUrl: "https://tabelog.com/tokyo/A1316/A131601/13318865/",
+    reserveUrl: "https://www.tablecheck.com/ja/konexioa/reserve/message?menu_items=6902f9f39f043a5d547c1919",
+    mediaName: "ecrat",
+    mediaUrl: "https://eclat.hpplus.jp/lifestyle/trip-foods/203380/",
+  },
+  {
+    id: "comptoir-occitan",
+    name: "コントワールオクシタン",
+    status: "行ったことがある",
+    region: "東京",
+    tokyoArea: "代官山",
+    genre: "フレンチ",
+    priceRange: "5,000〜8,000円",
+    formality: "カジュアル",
+    scenes: ["友人", "ランチ"],
+    moods: ["活気あり", "テラス"],
+    dogPolicy: "可",
+    recommend: "ランチの種類豊富。お天気の良い日はテラスも気持ちいい。ワインはセルフサービスで色々飲める。店内犬OK。名物カスレなどテイクアウトも可能。",
+    caution: "店内、席は狭い。",
+    oneLiner: "カジュアルに楽しめるビストロ",
+    memo: "店内犬OKの貴重な店",
+    tabelogUrl: "https://tabelog.com/tokyo/A1303/A130303/13007388/",
+    wantToGoAgain: 4,
+  },
+  {
+    id: "hashi-an",
+    name: "箸庵",
+    status: "行ったことがある",
+    region: "東京",
+    tokyoArea: "恵比寿",
+    genre: "そば・うどん",
+    priceRange: "3,000〜5,000円",
+    formality: "カジュアル",
+    scenes: ["友人", "家族"],
+    moods: ["活気あり", "テラス"],
+    dogPolicy: "テラス席のみ可",
+    recommend: "蕎麦だけでなく、一品料理、お酒の種類が豊富。卵焼きと手作り七味が美味しい。",
+    oneLiner: "蕎麦のつゆの種類が豊富。バジル味やカレー味も美味しい。",
+    memo: "テラス席犬OK",
+    tabelogUrl: "https://tabelog.com/tokyo/A1303/A130302/13198085/",
+    wantToGoAgain: 4,
+  },
+];
+
+var SEED_GIFTS_ = [
+  {
+    id: "awabi-steak-wako",
+    name: "アワビのステーキ",
+    brand: "和光",
+    category: "高級",
+    priceRange: "8,000〜12,000円",
+    recipients: ["取引先"],
+    keeping: "60日 / 常温",
+    purchaseUrl: "https://www.wako.co.jp/c/category-food/c-all-food/c-cuisine/09660015",
+    recommend: "日持ちするので一人暮らしの方にも",
+    caution: "品切れしているときもある / 気の利いた上等なお土産として好評。 / レタスの上にのせて食べると美味しい。1個入りもある。",
+    wantToUseAgain: 5,
+  },
+  {
+    id: "hasu-mochi-wakuden",
+    name: "蓮もち・和煮詰め合わせ",
+    brand: "和久傳",
+    category: "高級",
+    priceRange: "5,000〜8,000円",
+    recipients: ["取引先"],
+    keeping: "3か月 / 常温",
+    purchaseUrl: "https://shop.wakuden.kyoto/shop/g/g0021265031",
+    recommend: "日持ちする蓮根もちと佃煮の詰め合わせ",
+    caution: "佃煮はおつまみにもなるので相手を選ばず喜ばれる",
+  },
+];
