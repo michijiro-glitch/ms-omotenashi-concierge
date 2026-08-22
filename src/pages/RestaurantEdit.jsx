@@ -14,6 +14,7 @@ import {
   SCENES,
   STATUSES,
   TOKYO_AREAS,
+  statusLabel,
   toDateInput,
 } from "../lib/formOptions.js";
 import { photosFromItem, photosToPayload } from "../lib/photos.js";
@@ -162,7 +163,7 @@ function RestaurantForm({ restaurant, isNew, token, onSaved }) {
         <select value={fields.status} onChange={(event) => setField("status", event.target.value)}>
           {STATUSES.map((item) => (
             <option key={item} value={item}>
-              {item}
+              {statusLabel(item)}
             </option>
           ))}
         </select>

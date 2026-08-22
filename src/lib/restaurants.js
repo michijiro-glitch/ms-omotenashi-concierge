@@ -1,3 +1,5 @@
+import { matchesAny, matchesQuery } from "./search.js";
+
 export function areaLabel(restaurant) {
   return restaurant.tokyoArea || restaurant.otherArea || restaurant.region;
 }
@@ -51,26 +53,30 @@ export function sortPriceRanges(ranges) {
   });
 }
 
-export function matchesRestaurant(restaurant, { area, genre, priceRange, query }) {
+export function matchesRestaurant(restaurant, filters) {
+  const { area, genre, priceRange, status, formality, dogPolicy, scenes, moods, query } = filters;
   if (area && areaLabel(restaurant) !== area) return false;
   if (genre && restaurant.genre !== genre) return false;
   if (priceRange && restaurant.priceRange !== priceRange) return false;
+  if (status && restaurant.status !== status) return false;
+  if (formality && restaurant.formality !== formality) return false;
+  if (dogPolicy && restaurant.dogPolicy !== dogPolicy) return false;
+  if (!matchesAny(restaurant.scenes || [], scenes || [])) return false;
+  if (!matchesAny(restaurant.moods || [], moods || [])) return false;
 
-  const q = query.trim();
-  if (!q) return true;
-
-  const haystack = [
-    restaurant.name,
-    restaurant.oneLiner,
-    restaurant.recommend,
-    restaurant.caution,
-  ]
-    .filter(Boolean)
-    .join("\n");
-
-  return textIncludes(haystack, q);
+  return matchesQuery(
+    [
+      restaurant.name,
+      areaLabel(restaurant),
+      restaurant.genre,
+      restaurant.recommend,
+      restaurant.oneLiner,
+      restaurant.memo,
+      restaurant.mediaName,
+      restaurant.caution,
+    ],
+    query,
+  );
 }
 
-export function textIncludes(haystack, query) {
-  return haystack.toLocaleLowerCase("ja").includes(query.toLocaleLowerCase("ja"));
-}
+export { textIncludes } from "./search.js";

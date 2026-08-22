@@ -1,19 +1,19 @@
-import { photoSrc, textIncludes } from "./restaurants.js";
+import { photoSrc } from "./restaurants.js";
+import { matchesAny, matchesQuery, storageMethod } from "./search.js";
 
 export function firstGiftPhoto(gift) {
   return gift.photos?.[0] ? photoSrc(gift.photos[0]) : "";
 }
 
-export function matchesGift(gift, { category, recipient, query }) {
+export function matchesGift(gift, filters) {
+  const { category, recipients, priceRange, storage, query } = filters;
   if (category && gift.category !== category) return false;
-  if (recipient && !gift.recipients.includes(recipient)) return false;
+  if (priceRange && gift.priceRange !== priceRange) return false;
+  if (storage && storageMethod(gift.keeping) !== storage) return false;
+  if (!matchesAny(gift.recipients || [], recipients || [])) return false;
 
-  const q = query.trim();
-  if (!q) return true;
-
-  const haystack = [gift.name, gift.brand, gift.recommend, gift.caution, ...gift.recipients]
-    .filter(Boolean)
-    .join("\n");
-
-  return textIncludes(haystack, q);
+  return matchesQuery(
+    [gift.name, gift.brand, gift.recommend, gift.caution, gift.keeping, gift.mediaName, gift.mediaUrl],
+    query,
+  );
 }

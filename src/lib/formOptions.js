@@ -1,9 +1,17 @@
 export const STATUSES = ["行ったことがある", "行ってみたい"];
+export const STATUS_LABELS = {
+  行ったことがある: "M's Visit｜実際に訪問",
+  行ってみたい: "M's Wishlist｜行ってみたい",
+};
+
+export function statusLabel(status) {
+  return STATUS_LABELS[status] || STATUS_LABELS["行ってみたい"];
+}
 export const REGIONS = ["東京", "国内地方", "海外", "その他"];
 export const TOKYO_AREAS = [
   "銀座", "有楽町", "丸の内", "日本橋", "京橋", "六本木", "麻布十番", "赤坂", "虎ノ門", "新橋",
   "恵比寿", "代官山", "中目黒", "渋谷", "表参道", "青山", "広尾", "白金", "目黒", "品川",
-  "新宿", "神楽坂", "浅草", "上野", "その他",
+  "新宿", "神楽坂", "神保町", "浅草", "上野", "その他",
 ];
 export const GENRES = [
   "和食", "寿司", "天ぷら", "焼鳥", "焼肉", "鉄板焼", "すき焼き・しゃぶしゃぶ", "うなぎ", "そば・うどん",

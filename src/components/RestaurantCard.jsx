@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
+import { statusLabel } from "../lib/formOptions.js";
 import { areaLabel, cardTags, firstPhoto } from "../lib/restaurants.js";
 
 function Stars({ value }) {
@@ -30,7 +31,7 @@ export default function RestaurantCard({ restaurant }) {
             <span>{area}</span>
           </div>
         )}
-        {!visited && <span className="badge">行ってみたい</span>}
+        <span className="badge">{statusLabel(restaurant.status)}</span>
       </div>
 
       <div className="card-body">

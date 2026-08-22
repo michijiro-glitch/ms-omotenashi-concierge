@@ -274,7 +274,7 @@ function fillRestaurantForm_(form) {
   form.addListItem().setTitle("都内エリア").setChoiceValues([
     "銀座", "有楽町", "丸の内", "日本橋", "京橋", "六本木", "麻布十番", "赤坂", "虎ノ門", "新橋",
     "恵比寿", "代官山", "中目黒", "渋谷", "表参道", "青山", "広尾", "白金", "目黒", "品川",
-    "新宿", "神楽坂", "浅草", "上野", "その他",
+    "新宿", "神楽坂", "神保町", "浅草", "上野", "その他",
   ]);
   form.addTextItem().setTitle("地方・海外エリア").setHelpText("京都、パリなど。東京の店は空欄で構いません。");
   form.addListItem().setTitle("ジャンル").setChoiceValues([

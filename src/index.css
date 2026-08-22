@@ -166,9 +166,8 @@ h2,
 .eyebrow {
   margin: 0 0 8px;
   color: var(--accent);
-  letter-spacing: 0.12em;
+  letter-spacing: 0.04em;
   font-size: 12px;
-  text-transform: uppercase;
 }
 
 .detail-name {
@@ -196,8 +195,40 @@ h2,
 
 .filters {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
+}
+
+.check-filter {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  background: var(--card);
+}
+
+.check-filter legend {
+  padding: 0 6px;
+  color: var(--ink-soft);
+  font-size: 13px;
+}
+
+.search-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.clear-filters {
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-size: 14px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
 }
 
 .count,
@@ -254,10 +285,12 @@ h2,
   position: absolute;
   top: 12px;
   left: 12px;
+  max-width: calc(100% - 24px);
   background: var(--card);
   color: var(--accent);
   font-size: 11px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
   padding: 4px 8px;
 }
 

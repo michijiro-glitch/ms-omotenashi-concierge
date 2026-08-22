@@ -1,5 +1,6 @@
 import { Link, Navigate, useLocation, useParams } from "react-router-dom";
 import { useData } from "../data/DataProvider.jsx";
+import { statusLabel } from "../lib/formOptions.js";
 import { canEditInApp } from "../lib/sheetWrite.js";
 import { areaLabel, cardTags, isDogOk, photoSrc } from "../lib/restaurants.js";
 
@@ -67,7 +68,7 @@ export default function RestaurantDetail() {
         </ul>
       ) : null}
 
-      <p className="eyebrow">{visited ? "行ったことがある" : "行ってみたい"}</p>
+      <p className="eyebrow">{statusLabel(restaurant.status)}</p>
       <h1 className="detail-name">{restaurant.name}</h1>
       <p className="card-meta">
         {area}
