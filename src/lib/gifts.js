@@ -13,7 +13,17 @@ export function matchesGift(gift, filters) {
   if (!matchesAny(gift.recipients || [], recipients || [])) return false;
 
   return matchesQuery(
-    [gift.name, gift.brand, gift.recommend, gift.caution, gift.keeping, gift.mediaName, gift.mediaUrl],
+    [
+      gift.name,
+      gift.brand,
+      gift.category,
+      gift.recommend,
+      gift.caution,
+      gift.keeping,
+      gift.mediaName,
+      gift.mediaUrl,
+      ...(gift.recipients || []),
+    ],
     query,
   );
 }

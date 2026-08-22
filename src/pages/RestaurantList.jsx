@@ -125,7 +125,17 @@ export default function RestaurantList() {
       </div>
 
       {filtered.length === 0 ? (
-        <p className="empty">条件に合うものが見つかりませんでした</p>
+        <p className="empty">
+          条件に合うものが見つかりませんでした。
+          {hasParams(searchParams, FILTER_KEYS) ? (
+            <>
+              {" "}
+              <button type="button" className="clear-filters" onClick={() => clearParams(searchParams, setSearchParams, FILTER_KEYS)}>
+                条件をクリア
+              </button>
+            </>
+          ) : null}
+        </p>
       ) : (
         <div className="card-grid">
           {filtered.map((restaurant) => (
