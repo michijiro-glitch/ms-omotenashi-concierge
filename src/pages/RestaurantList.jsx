@@ -14,7 +14,7 @@ import { clearParams, getList, getParam, hasParams, setParam, toggleList } from 
 const FILTER_KEYS = ["q", "area", "genre", "price", "status", "formality", "dog", "scenes", "moods"];
 
 export default function RestaurantList() {
-  const { restaurants, loading } = useData();
+  const { restaurants, loading, restaurantError } = useData();
   const [searchParams, setSearchParams] = useSearchParams();
   const query = getParam(searchParams, "q");
   const area = getParam(searchParams, "area");
@@ -124,7 +124,11 @@ export default function RestaurantList() {
         />
       </div>
 
-      {filtered.length === 0 ? (
+      {loading && restaurants.length === 0 ? (
+        <p className="empty">読み込み中…</p>
+      ) : restaurantError && restaurants.length === 0 ? (
+        <p className="empty">一覧を読み込めませんでした。少し待ってから再読み込みしてください。</p>
+      ) : filtered.length === 0 ? (
         <p className="empty">
           条件に合うものが見つかりませんでした。
           {hasParams(searchParams, FILTER_KEYS) ? (

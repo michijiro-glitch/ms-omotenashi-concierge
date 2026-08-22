@@ -16,7 +16,7 @@ import { clearParams, getList, getParam, hasParams, setParam, toggleList } from 
 const FILTER_KEYS = ["q", "category", "recipients", "recipient", "price", "storage"];
 
 export default function GiftList() {
-  const { gifts, loading } = useData();
+  const { gifts, loading, giftError } = useData();
   const [searchParams, setSearchParams] = useSearchParams();
   const query = getParam(searchParams, "q");
   const category = getParam(searchParams, "category");
@@ -108,7 +108,11 @@ export default function GiftList() {
         />
       </div>
 
-      {filtered.length === 0 ? (
+      {loading && gifts.length === 0 ? (
+        <p className="empty">読み込み中…</p>
+      ) : giftError && gifts.length === 0 ? (
+        <p className="empty">一覧を読み込めませんでした。少し待ってから再読み込みしてください。</p>
+      ) : filtered.length === 0 ? (
         <p className="empty">
           条件に合うものが見つかりませんでした。
           {hasParams(searchParams, FILTER_KEYS) ? (

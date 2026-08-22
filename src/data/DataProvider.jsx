@@ -4,12 +4,15 @@ import localRestaurants from "../data/restaurants.json";
 import { loadGifts, loadRestaurants } from "../lib/loadData.js";
 
 const DataContext = createContext(null);
+const HAS_RESTAURANT_CSV = Boolean(import.meta.env.VITE_RESTAURANTS_CSV_URL);
+const HAS_GIFT_CSV = Boolean(import.meta.env.VITE_GIFTS_CSV_URL);
 
 export function DataProvider({ children }) {
-  const [restaurants, setRestaurants] = useState(localRestaurants);
-  const [gifts, setGifts] = useState(localGifts);
+  const [restaurants, setRestaurants] = useState(HAS_RESTAURANT_CSV ? [] : localRestaurants);
+  const [gifts, setGifts] = useState(HAS_GIFT_CSV ? [] : localGifts);
   const [loading, setLoading] = useState(true);
-  const [source, setSource] = useState("local");
+  const [restaurantError, setRestaurantError] = useState(false);
+  const [giftError, setGiftError] = useState(false);
   const mounted = useRef(true);
 
   const reload = useCallback(async () => {
@@ -19,9 +22,21 @@ export function DataProvider({ children }) {
       loadGifts(localGifts),
     ]);
     if (!mounted.current) return;
-    setRestaurants(restaurantResult.items);
-    setGifts(giftResult.items);
-    setSource(restaurantResult.source === "sheet" || giftResult.source === "sheet" ? "sheet" : "local");
+
+    if (restaurantResult.source !== "error") {
+      setRestaurants(restaurantResult.items);
+      setRestaurantError(false);
+    } else {
+      setRestaurantError(true);
+    }
+
+    if (giftResult.source !== "error") {
+      setGifts(giftResult.items);
+      setGiftError(false);
+    } else {
+      setGiftError(true);
+    }
+
     setLoading(false);
   }, []);
 
@@ -34,7 +49,9 @@ export function DataProvider({ children }) {
   }, [reload]);
 
   return (
-    <DataContext.Provider value={{ restaurants, gifts, loading, source, reload }}>
+    <DataContext.Provider
+      value={{ restaurants, gifts, loading, restaurantError, giftError, reload }}
+    >
       {children}
     </DataContext.Provider>
   );

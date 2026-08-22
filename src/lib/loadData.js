@@ -10,34 +10,20 @@ async function fetchCsv(url) {
   return response.text();
 }
 
-function mergeById(sheetItems, localItems) {
-  const ids = new Set(sheetItems.map((item) => item.id));
-  const names = new Set(sheetItems.map((item) => item.name));
-  return [...sheetItems, ...localItems.filter((item) => !ids.has(item.id) && !names.has(item.name))];
-}
-
-export async function loadRestaurants(fallback) {
-  const url = import.meta.env.VITE_RESTAURANTS_CSV_URL;
+async function loadSheet(url, mapRows, fallback) {
   if (!url) return { items: fallback, source: "local" };
 
   try {
-    const items = mapRestaurants(parseCsv(await fetchCsv(url)));
-    if (items.length === 0) return { items: fallback, source: "local" };
-    return { items: mergeById(items, fallback), source: "sheet" };
+    return { items: mapRows(parseCsv(await fetchCsv(url))), source: "sheet" };
   } catch {
-    return { items: fallback, source: "local" };
+    return { items: null, source: "error" };
   }
 }
 
-export async function loadGifts(fallback) {
-  const url = import.meta.env.VITE_GIFTS_CSV_URL;
-  if (!url) return { items: fallback, source: "local" };
+export function loadRestaurants(fallback) {
+  return loadSheet(import.meta.env.VITE_RESTAURANTS_CSV_URL, mapRestaurants, fallback);
+}
 
-  try {
-    const items = mapGifts(parseCsv(await fetchCsv(url)));
-    if (items.length === 0) return { items: fallback, source: "local" };
-    return { items: mergeById(items, fallback), source: "sheet" };
-  } catch {
-    return { items: fallback, source: "local" };
-  }
+export function loadGifts(fallback) {
+  return loadSheet(import.meta.env.VITE_GIFTS_CSV_URL, mapGifts, fallback);
 }
