@@ -35,7 +35,7 @@ export default function RestaurantList() {
 
   return (
     <div className="page">
-      <ListHeader title="レストラン" />
+      <ListHeader title="レストラン" addTo="/restaurants/new" />
 
       <div className="toolbar">
         <label className="search">

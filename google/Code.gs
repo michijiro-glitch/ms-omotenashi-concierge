@@ -381,11 +381,19 @@ function handleEditRequest_(raw) {
   }
 
   var kind = body.kind === "gift" ? "gift" : "restaurant";
+  if (String(body.action || "") === "create") {
+    var created = createItem_(kind, body.fields || {}, body.photos);
+    if (!created) {
+      return { ok: false, error: "追加できませんでした。店名または商品名を入れてください。" };
+    }
+    return { ok: true, id: created.id };
+  }
+
   var updated = updateItem_(kind, String(body.id || ""), body.fields || {}, body.photos);
   if (!updated) {
     return { ok: false, error: "シートにこの件が見つかりません。フォームから送ったものだけ直せます。" };
   }
-  return { ok: true };
+  return { ok: true, id: updated.id };
 }
 
 function jsonOutput_(obj) {
@@ -393,35 +401,125 @@ function jsonOutput_(obj) {
 }
 
 function lastIndex_(headers, name) {
-  var index = -1;
+  var indexes = headerIndexes_(headers, name);
+  return indexes.length ? indexes[indexes.length - 1] : -1;
+}
+
+function headerIndexes_(headers, name) {
+  var indexes = [];
   var i;
   for (i = 0; i < headers.length; i++) {
-    if (String(headers[i]) === name) index = i;
+    if (String(headers[i]) === name) indexes.push(i);
   }
-  return index;
+  return indexes;
 }
 
 function updateItem_(kind, id, fields, photos) {
   var nameHeader = kind === "gift" ? "商品名" : "店名";
   var map = kind === "gift" ? GIFT_FIELD_MAP_ : RESTAURANT_FIELD_MAP_;
-  var ss = getSpreadsheet_();
-  var sheets = ss.getSheets();
-  var s;
-  for (s = 0; s < sheets.length; s++) {
-    var sheet = sheets[s];
+  var gid = kind === "gift" ? 1989527302 : 89270631;
+  var sheet = findSheetByGid_(gid) || findSheetByNameHeader_(nameHeader);
+  if (!sheet) return null;
+
+  var lastCol = Math.max(sheet.getLastColumn(), 1);
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) return null;
+  var headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+  var row = findItemRow_(sheet, headers, lastRow, id, nameHeader);
+  if (!row) return null;
+
+  applyFields_(sheet, headers, row, map, fields);
+  ensureHeader(sheet, headers, "id");
+  headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  var stableId = keepItemId_(sheet, headers, row, id);
+  if (photos) applyPhotos_(sheet, row, photos);
+  return { id: stableId };
+}
+
+function keepItemId_(sheet, headers, row, fallbackId) {
+  var idCol = lastIndex_(headers, "id") + 1;
+  if (!idCol) return fallbackId;
+  var current = String(sheet.getRange(row, idCol).getValue() || "").trim();
+  if (current) return current;
+  if (fallbackId) sheet.getRange(row, idCol).setValue(fallbackId);
+  return fallbackId || current;
+}
+
+function createItem_(kind, fields, photos) {
+  var name = String((fields && fields.name) || "").trim();
+  if (!name) return null;
+
+  var nameHeader = kind === "gift" ? "商品名" : "店名";
+  var map = kind === "gift" ? GIFT_FIELD_MAP_ : RESTAURANT_FIELD_MAP_;
+  var gid = kind === "gift" ? 1989527302 : 89270631;
+  var sheet = findSheetByGid_(gid) || findSheetByNameHeader_(nameHeader);
+  if (!sheet) return null;
+
+  var headers = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), 1)).getValues()[0];
+  ensureHeader(sheet, headers, "id");
+  headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+
+  var id = uniqueId_(sheet, headers, nameHeader, name);
+  var row = Math.max(sheet.getLastRow() + 1, 2);
+  var timestampCol = lastIndex_(headers, "タイムスタンプ");
+  if (timestampCol < 0) timestampCol = lastIndex_(headers, "Timestamp");
+  if (timestampCol >= 0) sheet.getRange(row, timestampCol + 1).setValue(new Date());
+  applyFields_(sheet, headers, row, map, fields);
+  var idCol = lastIndex_(headers, "id") + 1;
+  if (idCol) sheet.getRange(row, idCol).setValue(id);
+  if (photos) applyPhotos_(sheet, row, photos);
+  return { id: id };
+}
+
+function findSheetByNameHeader_(nameHeader) {
+  var sheets = getSpreadsheet_().getSheets();
+  var i;
+  for (i = 0; i < sheets.length; i++) {
+    var sheet = sheets[i];
     if (sheet.getName() === "設定") continue;
-    var lastCol = Math.max(sheet.getLastColumn(), 1);
-    var lastRow = sheet.getLastRow();
-    if (lastRow < 2) continue;
-    var headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
-    if (lastIndex_(headers, nameHeader) < 0) continue;
-    var row = findItemRow_(sheet, headers, lastRow, id, nameHeader);
-    if (!row) continue;
-    applyFields_(sheet, headers, row, map, fields);
-    if (photos) applyPhotos_(sheet, row, photos);
-    return true;
+    var headers = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), 1)).getValues()[0];
+    if (lastIndex_(headers, nameHeader) >= 0) return sheet;
   }
-  return false;
+  return null;
+}
+
+function uniqueId_(sheet, headers, nameHeader, name) {
+  var base = makeSlug_(name);
+  var existing = collectIds_(sheet, headers, nameHeader);
+  var id = base;
+  var n = 2;
+  while (existing[id]) {
+    id = base + "-" + n;
+    n += 1;
+  }
+  return id;
+}
+
+function makeSlug_(name) {
+  var ascii = String(name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  if (ascii) return ascii;
+  return String(name || "").trim() || "item";
+}
+
+function collectIds_(sheet, headers, nameHeader) {
+  var existing = {};
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) return existing;
+  var idCol = lastIndex_(headers, "id");
+  var nameCol = lastIndex_(headers, nameHeader);
+  var values = sheet.getRange(2, 1, lastRow - 1, headers.length).getValues();
+  var r;
+  for (r = 0; r < values.length; r++) {
+    if (idCol >= 0) {
+      var id = String(values[r][idCol] || "").trim();
+      if (id) existing[id] = true;
+    }
+    if (nameCol >= 0) {
+      var rowName = String(values[r][nameCol] || "").trim();
+      if (rowName) existing[rowName] = true;
+    }
+  }
+  return existing;
 }
 
 function getPhotoFolder_() {
@@ -487,28 +585,51 @@ function applyPhotos_(sheet, row, photos) {
 
 function findItemRow_(sheet, headers, lastRow, id, nameHeader) {
   var idCol = lastIndex_(headers, "id");
-  var nameCol = lastIndex_(headers, nameHeader);
+  var nameCols = nameColumns_(headers, nameHeader);
   var values = sheet.getRange(2, 1, lastRow - 1, headers.length).getValues();
   var i;
   for (i = 0; i < values.length; i++) {
     var rowId = idCol >= 0 ? String(values[i][idCol] || "").trim() : "";
-    var rowName = nameCol >= 0 ? String(values[i][nameCol] || "").trim() : "";
-    if (rowId === id || rowName === id) return i + 2;
+    if (rowId && rowId === id) return i + 2;
+    var n;
+    for (n = 0; n < nameCols.length; n++) {
+      var rowName = String(values[i][nameCols[n]] || "").trim();
+      if (rowName && rowName === id) return i + 2;
+    }
   }
   return 0;
+}
+
+function nameColumns_(headers, nameHeader) {
+  var cols = [];
+  var i;
+  for (i = 0; i < headers.length; i++) {
+    var header = String(headers[i]);
+    if (header === nameHeader || header.indexOf(nameHeader) === 0) cols.push(i);
+  }
+  return cols;
 }
 
 function applyFields_(sheet, headers, row, map, fields) {
   Object.keys(map).forEach(function (key) {
     if (!Object.prototype.hasOwnProperty.call(fields, key)) return;
-    var col = lastIndex_(headers, map[key]);
-    if (col < 0) return;
+    var names = map[key];
+    if (Object.prototype.toString.call(names) !== "[object Array]") names = [names];
     var value = fields[key];
     if (Object.prototype.toString.call(value) === "[object Array]") {
       value = value.filter(Boolean).join("、");
     }
     if (value === null || value === undefined) value = "";
-    sheet.getRange(row, col + 1).setValue(value);
+    var n;
+    for (n = 0; n < names.length; n++) {
+      var cols = headerIndexes_(headers, names[n]);
+      var c;
+      for (c = 0; c < cols.length; c++) {
+        try {
+          sheet.getRange(row, cols[c] + 1).setValue(value);
+        } catch (error) {}
+      }
+    }
   });
 }
 
@@ -538,15 +659,15 @@ var RESTAURANT_FIELD_MAP_ = {
 };
 
 var GIFT_FIELD_MAP_ = {
-  name: "商品名",
-  brand: "店名・ブランド",
+  name: ["商品名", "商品名・"],
+  brand: ["店名・ブランド", "店名・"],
   category: "カテゴリ",
   priceRange: "価格帯",
   recipients: "向いている相手・用途",
   keeping: "日持ち・保存",
-  purchaseUrl: "購入先URL",
+  purchaseUrl: ["購入先URL", "購入先／公式URL"],
   recommend: "おすすめポイント",
-  caution: "注意点・メモ",
+  caution: ["注意点・メモ", "注意点"],
   mediaName: "メディア掲載名",
   mediaUrl: "メディア掲載URL",
   wantToUseAgain: "また使いたい度",

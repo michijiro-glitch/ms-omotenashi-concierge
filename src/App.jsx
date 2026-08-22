@@ -18,6 +18,14 @@ export default function App() {
       <Route path="/" element={<Home />} />
       <Route path="/restaurants" element={<RestaurantList />} />
       <Route
+        path="/restaurants/new"
+        element={
+          <EditOnly>
+            <RestaurantEdit />
+          </EditOnly>
+        }
+      />
+      <Route
         path="/restaurants/:id/edit"
         element={
           <EditOnly>
@@ -27,6 +35,14 @@ export default function App() {
       />
       <Route path="/restaurants/:id" element={<RestaurantDetail />} />
       <Route path="/gifts" element={<GiftList />} />
+      <Route
+        path="/gifts/new"
+        element={
+          <EditOnly>
+            <GiftEdit />
+          </EditOnly>
+        }
+      />
       <Route
         path="/gifts/:id/edit"
         element={

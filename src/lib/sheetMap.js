@@ -34,13 +34,13 @@ export function rowToRestaurant(record, index) {
 }
 
 export function rowToGift(record, index) {
-  const name = cell(record, "商品名");
+  const name = cell(record, "商品名", "商品名・");
   if (!name) return null;
 
   return {
     id: cell(record, "id") || name,
     name,
-    brand: cell(record, "店名・ブランド"),
+    brand: cell(record, "店名・ブランド", "店名・"),
     category: cell(record, "カテゴリ"),
     priceRange: cell(record, "価格帯"),
     recipients: splitList(cell(record, "向いている相手・用途")),

@@ -16,7 +16,7 @@ export function clearEditToken() {
   sessionStorage.removeItem(TOKEN_KEY);
 }
 
-export async function saveItem({ kind, id, fields, photos, token }) {
+export async function saveItem({ kind, id, fields, photos, token, action = "update" }) {
   const url = import.meta.env.VITE_EDIT_SCRIPT_URL;
   if (!url) {
     throw new Error("まだシートへ書き戻す接続がありません。");
@@ -25,7 +25,7 @@ export async function saveItem({ kind, id, fields, photos, token }) {
   const response = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify({ kind, id, fields, photos, token }),
+    body: JSON.stringify({ kind, id, fields, photos, token, action }),
   });
   const text = await response.text();
   let payload;

@@ -50,13 +50,14 @@ function CheckGroup({ options, value, onChange }) {
 
 export default function RestaurantEdit() {
   const { id } = useParams();
+  const isNew = !id;
   const location = useLocation();
   const navigate = useNavigate();
   const { restaurants, loading, reload } = useData();
-  const restaurant = restaurants.find((item) => item.id === id);
+  const restaurant = isNew ? null : restaurants.find((item) => item.id === id);
   const listPath = { pathname: "/restaurants", search: location.state?.listSearch ?? "" };
 
-  if (loading) {
+  if (!isNew && loading) {
     return (
       <div className="page detail-page">
         <p className="empty">読み込み中…</p>
@@ -64,26 +65,27 @@ export default function RestaurantEdit() {
     );
   }
 
-  if (!restaurant) {
+  if (!isNew && !restaurant) {
     return <Navigate to={listPath} replace />;
   }
 
   return (
     <div className="page detail-page">
-      <Link className="back" to={`/restaurants/${id}`} state={location.state}>
-        ← 詳細に戻る
+      <Link className="back" to={isNew ? listPath : `/restaurants/${id}`} state={location.state}>
+        {isNew ? "← 一覧に戻る" : "← 詳細に戻る"}
       </Link>
-      <p className="eyebrow">直す</p>
-      <h1 className="detail-name">{restaurant.name}</h1>
+      <p className="eyebrow">{isNew ? "新規登録" : "直す"}</p>
+      <h1 className="detail-name">{isNew ? "レストランを追加" : restaurant.name}</h1>
       <p className="edit-note">写真は外す・足すことができます。最大5枚です。</p>
       <EditGate>
         {(token) => (
           <RestaurantForm
             restaurant={restaurant}
+            isNew={isNew}
             token={token}
-            onSaved={async () => {
+            onSaved={async (savedId) => {
               await reload();
-              navigate(`/restaurants/${id}`, { state: location.state });
+              navigate(`/restaurants/${savedId}`, { state: location.state });
             }}
           />
         )}
@@ -92,32 +94,32 @@ export default function RestaurantEdit() {
   );
 }
 
-function RestaurantForm({ restaurant, token, onSaved }) {
+function RestaurantForm({ restaurant, isNew, token, onSaved }) {
   const [fields, setFields] = useState({
-    name: restaurant.name || "",
-    status: restaurant.status || "行ってみたい",
-    region: restaurant.region || "",
-    tokyoArea: restaurant.tokyoArea || "",
-    otherArea: restaurant.otherArea || "",
-    genre: restaurant.genre || "",
-    priceRange: restaurant.priceRange || "",
-    formality: restaurant.formality || "",
-    scenes: restaurant.scenes || [],
-    moods: restaurant.moods || [],
-    dogPolicy: restaurant.dogPolicy || "要確認",
-    recommend: restaurant.recommend || "",
-    caution: restaurant.caution || "",
-    oneLiner: restaurant.oneLiner || "",
-    memo: restaurant.memo || "",
-    lastVisit: toDateInput(restaurant.lastVisit),
-    officialUrl: restaurant.officialUrl || "",
-    tabelogUrl: restaurant.tabelogUrl || "",
-    reserveUrl: restaurant.reserveUrl || "",
-    mediaName: restaurant.mediaName || "",
-    mediaUrl: restaurant.mediaUrl || "",
-    wantToGoAgain: restaurant.wantToGoAgain ? String(restaurant.wantToGoAgain) : "",
+    name: restaurant?.name || "",
+    status: restaurant?.status || "行ってみたい",
+    region: restaurant?.region || "",
+    tokyoArea: restaurant?.tokyoArea || "",
+    otherArea: restaurant?.otherArea || "",
+    genre: restaurant?.genre || "",
+    priceRange: restaurant?.priceRange || "",
+    formality: restaurant?.formality || "",
+    scenes: restaurant?.scenes || [],
+    moods: restaurant?.moods || [],
+    dogPolicy: restaurant?.dogPolicy || "要確認",
+    recommend: restaurant?.recommend || "",
+    caution: restaurant?.caution || "",
+    oneLiner: restaurant?.oneLiner || "",
+    memo: restaurant?.memo || "",
+    lastVisit: toDateInput(restaurant?.lastVisit),
+    officialUrl: restaurant?.officialUrl || "",
+    tabelogUrl: restaurant?.tabelogUrl || "",
+    reserveUrl: restaurant?.reserveUrl || "",
+    mediaName: restaurant?.mediaName || "",
+    mediaUrl: restaurant?.mediaUrl || "",
+    wantToGoAgain: restaurant?.wantToGoAgain ? String(restaurant.wantToGoAgain) : "",
   });
-  const [photos, setPhotos] = useState(() => photosFromItem(restaurant));
+  const [photos, setPhotos] = useState(() => photosFromItem(restaurant || {}));
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -133,15 +135,16 @@ function RestaurantForm({ restaurant, token, onSaved }) {
         setSaving(true);
         setError("");
         try {
-          await saveItem({
+          const payload = await saveItem({
             kind: "restaurant",
-            id: restaurant.id,
+            action: isNew ? "create" : "update",
+            id: restaurant?.id || "",
             fields,
             photos: await photosToPayload(photos),
             token,
           });
           await new Promise((resolve) => setTimeout(resolve, 2000));
-          await onSaved();
+          await onSaved(payload.id || restaurant?.id);
         } catch (err) {
           if (String(err.message || "").includes("合言葉")) {
             clearEditToken();
@@ -276,7 +279,7 @@ function RestaurantForm({ restaurant, token, onSaved }) {
       </Field>
       {error ? <p className="edit-error">{error}</p> : null}
       <button className="edit-submit" type="submit" disabled={saving}>
-        {saving ? "保存しています…" : "保存する"}
+        {saving ? "保存しています…" : isNew ? "登録する" : "保存する"}
       </button>
     </form>
   );

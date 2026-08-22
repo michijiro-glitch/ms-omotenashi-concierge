@@ -18,13 +18,14 @@ function Field({ label, children }) {
 
 export default function GiftEdit() {
   const { id } = useParams();
+  const isNew = !id;
   const location = useLocation();
   const navigate = useNavigate();
   const { gifts, loading, reload } = useData();
-  const gift = gifts.find((item) => item.id === id);
+  const gift = isNew ? null : gifts.find((item) => item.id === id);
   const listPath = { pathname: "/gifts", search: location.state?.listSearch ?? "" };
 
-  if (loading) {
+  if (!isNew && loading) {
     return (
       <div className="page detail-page">
         <p className="empty">読み込み中…</p>
@@ -32,26 +33,27 @@ export default function GiftEdit() {
     );
   }
 
-  if (!gift) {
+  if (!isNew && !gift) {
     return <Navigate to={listPath} replace />;
   }
 
   return (
     <div className="page detail-page">
-      <Link className="back" to={`/gifts/${id}`} state={location.state}>
-        ← 詳細に戻る
+      <Link className="back" to={isNew ? listPath : `/gifts/${id}`} state={location.state}>
+        {isNew ? "← 一覧に戻る" : "← 詳細に戻る"}
       </Link>
-      <p className="eyebrow">直す</p>
-      <h1 className="detail-name">{gift.name}</h1>
+      <p className="eyebrow">{isNew ? "新規登録" : "直す"}</p>
+      <h1 className="detail-name">{isNew ? "手土産・お取り寄せを追加" : gift.name}</h1>
       <p className="edit-note">写真は外す・足すことができます。最大5枚です。</p>
       <EditGate>
         {(token) => (
           <GiftForm
             gift={gift}
+            isNew={isNew}
             token={token}
-            onSaved={async () => {
+            onSaved={async (savedId) => {
               await reload();
-              navigate(`/gifts/${id}`, { state: location.state });
+              navigate(`/gifts/${savedId}`, { state: location.state });
             }}
           />
         )}
@@ -60,22 +62,22 @@ export default function GiftEdit() {
   );
 }
 
-function GiftForm({ gift, token, onSaved }) {
+function GiftForm({ gift, isNew, token, onSaved }) {
   const [fields, setFields] = useState({
-    name: gift.name || "",
-    brand: gift.brand || "",
-    category: gift.category || "",
-    priceRange: gift.priceRange || "",
-    recipients: gift.recipients || [],
-    keeping: gift.keeping || "",
-    purchaseUrl: gift.purchaseUrl || "",
-    recommend: gift.recommend || "",
-    caution: gift.caution || "",
-    mediaName: gift.mediaName || "",
-    mediaUrl: gift.mediaUrl || "",
-    wantToUseAgain: gift.wantToUseAgain ? String(gift.wantToUseAgain) : "",
+    name: gift?.name || "",
+    brand: gift?.brand || "",
+    category: gift?.category || "",
+    priceRange: gift?.priceRange || "",
+    recipients: gift?.recipients || [],
+    keeping: gift?.keeping || "",
+    purchaseUrl: gift?.purchaseUrl || "",
+    recommend: gift?.recommend || "",
+    caution: gift?.caution || "",
+    mediaName: gift?.mediaName || "",
+    mediaUrl: gift?.mediaUrl || "",
+    wantToUseAgain: gift?.wantToUseAgain ? String(gift.wantToUseAgain) : "",
   });
-  const [photos, setPhotos] = useState(() => photosFromItem(gift));
+  const [photos, setPhotos] = useState(() => photosFromItem(gift || {}));
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -91,15 +93,16 @@ function GiftForm({ gift, token, onSaved }) {
         setSaving(true);
         setError("");
         try {
-          await saveItem({
+          const payload = await saveItem({
             kind: "gift",
-            id: gift.id,
+            action: isNew ? "create" : "update",
+            id: gift?.id || "",
             fields,
             photos: await photosToPayload(photos),
             token,
           });
           await new Promise((resolve) => setTimeout(resolve, 2000));
-          await onSaved();
+          await onSaved(payload.id || gift?.id);
         } catch (err) {
           if (String(err.message || "").includes("合言葉")) {
             clearEditToken();
@@ -184,7 +187,7 @@ function GiftForm({ gift, token, onSaved }) {
       </Field>
       {error ? <p className="edit-error">{error}</p> : null}
       <button className="edit-submit" type="submit" disabled={saving}>
-        {saving ? "保存しています…" : "保存する"}
+        {saving ? "保存しています…" : isNew ? "登録する" : "保存する"}
       </button>
     </form>
   );

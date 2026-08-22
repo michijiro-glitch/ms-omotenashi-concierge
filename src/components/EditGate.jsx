@@ -9,7 +9,7 @@ export default function EditGate({ children }) {
   if (!canEditInApp()) {
     return (
       <p className="empty">
-        公開サイトから直す接続は、まだ入っていません。フォームから送ったあとにシートで直すか、接続の準備が終わってから使ってください。
+        自分用の画面から直す接続は、まだ入っていません。フォームから送ったあとにシートで直すか、接続の準備が終わってから使ってください。
       </p>
     );
   }
@@ -33,7 +33,7 @@ export default function EditGate({ children }) {
         setError("");
       }}
     >
-      <p className="edit-note">公開ページなので、合言葉が必要です。他人には教えないでください。</p>
+      <p className="edit-note">合言葉が必要です。他人には教えないでください。</p>
       <label className="edit-field">
         <span>合言葉</span>
         <input

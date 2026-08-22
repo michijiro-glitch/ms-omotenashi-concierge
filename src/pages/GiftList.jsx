@@ -32,7 +32,7 @@ export default function GiftList() {
 
   return (
     <div className="page">
-      <ListHeader title="手土産・お取り寄せ" />
+      <ListHeader title="手土産・お取り寄せ" addTo="/gifts/new" />
 
       <div className="toolbar">
         <label className="search">

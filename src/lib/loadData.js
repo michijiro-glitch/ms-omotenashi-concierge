@@ -10,9 +10,10 @@ async function fetchCsv(url) {
   return response.text();
 }
 
-function mergeByName(sheetItems, localItems) {
+function mergeById(sheetItems, localItems) {
+  const ids = new Set(sheetItems.map((item) => item.id));
   const names = new Set(sheetItems.map((item) => item.name));
-  return [...sheetItems, ...localItems.filter((item) => !names.has(item.name))];
+  return [...sheetItems, ...localItems.filter((item) => !ids.has(item.id) && !names.has(item.name))];
 }
 
 export async function loadRestaurants(fallback) {
@@ -22,7 +23,7 @@ export async function loadRestaurants(fallback) {
   try {
     const items = mapRestaurants(parseCsv(await fetchCsv(url)));
     if (items.length === 0) return { items: fallback, source: "local" };
-    return { items: mergeByName(items, fallback), source: "sheet" };
+    return { items: mergeById(items, fallback), source: "sheet" };
   } catch {
     return { items: fallback, source: "local" };
   }
@@ -35,7 +36,7 @@ export async function loadGifts(fallback) {
   try {
     const items = mapGifts(parseCsv(await fetchCsv(url)));
     if (items.length === 0) return { items: fallback, source: "local" };
-    return { items: mergeByName(items, fallback), source: "sheet" };
+    return { items: mergeById(items, fallback), source: "sheet" };
   } catch {
     return { items: fallback, source: "local" };
   }
