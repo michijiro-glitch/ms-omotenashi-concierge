@@ -1,14 +1,15 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 export default function SearchBar({ label, placeholder, value, onChange }) {
+  const inputRef = useRef(null);
   const composingRef = useRef(false);
-  const focusedRef = useRef(false);
   const timerRef = useRef(null);
-  const [draft, setDraft] = useState(value);
 
   useEffect(() => {
-    if (focusedRef.current || composingRef.current) return;
-    setDraft(value);
+    const input = inputRef.current;
+    if (!input) return;
+    if (document.activeElement === input) return;
+    if (input.value !== (value ?? "")) input.value = value ?? "";
   }, [value]);
 
   function clearTimer() {
@@ -18,7 +19,7 @@ export default function SearchBar({ label, placeholder, value, onChange }) {
   }
 
   function commit(next) {
-    setDraft(next);
+    clearTimer();
     onChange(next);
   }
 
@@ -26,49 +27,42 @@ export default function SearchBar({ label, placeholder, value, onChange }) {
     <label className="search">
       <span className="sr-only">{label}</span>
       <input
+        ref={inputRef}
         type="text"
         enterKeyHint="search"
         autoComplete="off"
-        value={draft}
-        onChange={(event) => {
-          const next = event.target.value;
-          setDraft(next);
-          if (composingRef.current || event.nativeEvent.isComposing) {
-            clearTimer();
-            return;
-          }
+        defaultValue={value}
+        placeholder={placeholder}
+        onCompositionStart={() => {
+          composingRef.current = true;
+          clearTimer();
+        }}
+        onCompositionUpdate={() => {
+          composingRef.current = true;
+        }}
+        onCompositionEnd={(event) => {
+          composingRef.current = false;
+          commit(event.currentTarget.value);
+        }}
+        onInput={(event) => {
+          if (composingRef.current || event.nativeEvent.isComposing) return;
+          const next = event.currentTarget.value;
           clearTimer();
           timerRef.current = setTimeout(() => {
             timerRef.current = null;
             if (composingRef.current) return;
             onChange(next);
-          }, 500);
-        }}
-        onCompositionStart={() => {
-          composingRef.current = true;
-          clearTimer();
-        }}
-        onCompositionEnd={(event) => {
-          composingRef.current = false;
-          clearTimer();
-          commit(event.currentTarget.value);
-        }}
-        onFocus={() => {
-          focusedRef.current = true;
+          }, 400);
         }}
         onBlur={(event) => {
-          focusedRef.current = false;
           composingRef.current = false;
-          clearTimer();
-          onChange(event.currentTarget.value);
+          commit(event.currentTarget.value);
         }}
         onKeyDown={(event) => {
           if (event.key !== "Enter") return;
           composingRef.current = false;
-          clearTimer();
-          onChange(event.currentTarget.value);
+          event.currentTarget.blur();
         }}
-        placeholder={placeholder}
       />
     </label>
   );
