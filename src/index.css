@@ -474,6 +474,12 @@ h2,
   gap: 8px 14px;
 }
 
+.edit-radios {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .edit-check {
   display: flex;
   gap: 6px;
@@ -1016,7 +1022,8 @@ h2,
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .edit-form .edit-checks {
+  .edit-form .edit-checks,
+  .edit-form .edit-radios {
     display: grid;
     grid-template-columns: 1fr;
     gap: 0;

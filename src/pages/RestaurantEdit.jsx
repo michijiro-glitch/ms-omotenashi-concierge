@@ -15,7 +15,6 @@ import {
   SCENES,
   STATUSES,
   TOKYO_AREAS,
-  statusLabel,
   toDateInput,
 } from "../lib/formOptions.js";
 import { photosFromItem, photosToPayload } from "../lib/photos.js";
@@ -106,7 +105,7 @@ export default function RestaurantEdit() {
 function RestaurantForm({ restaurant, isNew, token, onSaved }) {
   const [fields, setFields] = useState({
     name: restaurant?.name || "",
-    status: restaurant?.status || "行ってみたい",
+    status: restaurant?.status || "行ったことがある",
     region: restaurant?.region || "",
     tokyoArea: restaurant?.tokyoArea || "",
     otherArea: restaurant?.otherArea || "",
@@ -167,15 +166,23 @@ function RestaurantForm({ restaurant, isNew, token, onSaved }) {
       <Field label="店名">
         <input value={fields.name} onChange={(event) => setField("name", event.target.value)} required />
       </Field>
-      <Field label="ステータス">
-        <select value={fields.status} onChange={(event) => setField("status", event.target.value)}>
+      <div className="edit-field">
+        <span>ステータス</span>
+        <div className="edit-radios" role="radiogroup" aria-label="ステータス">
           {STATUSES.map((item) => (
-            <option key={item} value={item}>
-              {statusLabel(item)}
-            </option>
+            <label key={item} className="edit-check">
+              <input
+                type="radio"
+                name="status"
+                value={item}
+                checked={fields.status === item}
+                onChange={() => setField("status", item)}
+              />
+              {item}
+            </label>
           ))}
-        </select>
-      </Field>
+        </div>
+      </div>
       <Field label="地域区分">
         <select value={fields.region} onChange={(event) => setField("region", event.target.value)}>
           <option value="">未選択</option>
