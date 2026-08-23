@@ -122,7 +122,8 @@ h2,
   text-transform: uppercase;
 }
 
-.choice-card strong {
+.choice-card h2 {
+  margin: 0;
   font-family: "Noto Serif JP", "Cormorant Garamond", serif;
   font-size: clamp(20px, 2.5vw, 28px);
   font-weight: 500;
@@ -312,6 +313,34 @@ h2,
   margin: 0;
   color: var(--ink-soft);
   font-size: 13px;
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin: 8px 0 0;
+}
+
+.facts-row {
+  display: flex;
+  gap: 0;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 13px;
+}
+
+.facts dt {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.facts dt::after {
+  content: "：";
+}
+
+.facts dd {
+  margin: 0;
 }
 
 .dot {

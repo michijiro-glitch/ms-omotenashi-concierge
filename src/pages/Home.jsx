@@ -1,15 +1,19 @@
 import { Link } from "react-router-dom";
+import PageMeta from "../components/PageMeta.jsx";
+import { DESCRIPTIONS, SITE_NAME } from "../lib/pageMeta.js";
 
 export default function Home() {
   return (
     <div className="page home-page">
+      <PageMeta title={SITE_NAME} description={DESCRIPTIONS.home} />
       <header className="site-header">
         <h1>
           <img
             className="brand-logo"
             src={`${import.meta.env.BASE_URL}logo.png?v=3`}
-            alt="M's Omotenashi Concierge"
+            alt=""
           />
+          <span className="sr-only">{SITE_NAME}</span>
         </h1>
         <div className="brand-note">
           <p>長年、仕事やプライベートで数多くの会食や食の場を経験してきました。</p>
@@ -25,12 +29,12 @@ export default function Home() {
       <nav className="choice-grid" aria-label="カテゴリを選ぶ">
         <Link className="choice-card" to="/restaurants">
           <span className="choice-kicker">Restaurant</span>
-          <strong>レストラン</strong>
+          <h2>レストラン</h2>
           <span className="choice-note">お店を探す</span>
         </Link>
         <Link className="choice-card" to="/gifts">
           <span className="choice-kicker">Gift</span>
-          <strong>手土産・お取り寄せ</strong>
+          <h2>手土産・お取り寄せ</h2>
           <span className="choice-note">贈り物や取り寄せを探す</span>
         </Link>
       </nav>

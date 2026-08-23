@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link, Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import EditGate from "../components/EditGate.jsx";
+import PageMeta from "../components/PageMeta.jsx";
 import PhotoEditor from "../components/PhotoEditor.jsx";
 import { useData } from "../data/DataProvider.jsx";
 import { GIFT_CATEGORIES, GIFT_RECIPIENTS, PRICE_RANGES, RATINGS } from "../lib/formOptions.js";
 import { photosFromItem, photosToPayload } from "../lib/photos.js";
+import { fullTitle } from "../lib/pageMeta.js";
 import { clearEditToken, saveItem } from "../lib/sheetWrite.js";
 
 function Field({ label, children }) {
@@ -28,6 +30,7 @@ export default function GiftEdit() {
   if (!isNew && loading) {
     return (
       <div className="page detail-page">
+        <PageMeta title={fullTitle("直す")} description="編集画面です。" noindex />
         <p className="empty">読み込み中…</p>
       </div>
     );
@@ -39,6 +42,11 @@ export default function GiftEdit() {
 
   return (
     <div className="page detail-page">
+      <PageMeta
+        title={fullTitle(isNew ? "手土産・お取り寄せを追加" : `${gift.name}を直す`)}
+        description="編集画面です。公開サイトでは使いません。"
+        noindex
+      />
       <Link className="back" to={isNew ? listPath : `/gifts/${id}`} state={location.state}>
         {isNew ? "← 一覧に戻る" : "← 詳細に戻る"}
       </Link>

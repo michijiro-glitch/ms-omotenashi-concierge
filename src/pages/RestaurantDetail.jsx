@@ -1,6 +1,9 @@
 import { Link, Navigate, useLocation, useParams } from "react-router-dom";
+import Facts from "../components/Facts.jsx";
+import PageMeta from "../components/PageMeta.jsx";
 import { useData } from "../data/DataProvider.jsx";
 import { statusLabel } from "../lib/formOptions.js";
+import { clipMeta, DESCRIPTIONS, fullTitle } from "../lib/pageMeta.js";
 import { canEditInApp } from "../lib/sheetWrite.js";
 import { areaLabel, cardTags, isDogOk, photoSrc } from "../lib/restaurants.js";
 
@@ -14,6 +17,23 @@ function Section({ title, children }) {
   );
 }
 
+function MediaSection({ name, url }) {
+  if (!name) return null;
+  return (
+    <Section title="メディア掲載">
+      {url ? (
+        <p>
+          <a href={url} target="_blank" rel="noreferrer">
+            {name}
+          </a>
+        </p>
+      ) : (
+        <p>{name}</p>
+      )}
+    </Section>
+  );
+}
+
 export default function RestaurantDetail() {
   const { id } = useParams();
   const location = useLocation();
@@ -24,6 +44,7 @@ export default function RestaurantDetail() {
   if (loading) {
     return (
       <div className="page detail-page">
+        <PageMeta title={fullTitle("レストラン")} description={DESCRIPTIONS.restaurants} />
         <p className="empty">読み込み中…</p>
       </div>
     );
@@ -36,9 +57,17 @@ export default function RestaurantDetail() {
   const visited = restaurant.status === "行ったことがある";
   const photos = (restaurant.photos || []).map(photoSrc).filter(Boolean);
   const area = areaLabel(restaurant);
+  const status = statusLabel(restaurant.status);
+  const description =
+    clipMeta(
+      [restaurant.oneLiner, restaurant.recommend, [area, restaurant.genre, restaurant.priceRange].filter(Boolean).join("、")]
+        .filter(Boolean)
+        .join(" "),
+    ) || `${restaurant.name}のレストラン詳細。`;
 
   return (
     <div className="page detail-page">
+      <PageMeta title={fullTitle(restaurant.name, "レストラン")} description={description} />
       <Link className="back" to={listPath}>
         ← 一覧に戻る
       </Link>
@@ -60,23 +89,24 @@ export default function RestaurantDetail() {
 
       {photos.length > 1 ? (
         <ul className="photo-thumbs">
-          {photos.slice(1).map((src) => (
+          {photos.slice(1).map((src, index) => (
             <li key={src}>
-              <img src={src} alt="" />
+              <img src={src} alt={`${restaurant.name}の写真${index + 2}`} />
             </li>
           ))}
         </ul>
       ) : null}
 
-      <p className="eyebrow">{statusLabel(restaurant.status)}</p>
+      <p className="eyebrow">{status}</p>
       <h1 className="detail-name">{restaurant.name}</h1>
-      <p className="card-meta">
-        {area}
-        <span className="dot">·</span>
-        {restaurant.genre}
-        <span className="dot">·</span>
-        {restaurant.priceRange}
-      </p>
+      <Facts
+        items={[
+          { label: "エリア", value: area },
+          { label: "ジャンル", value: restaurant.genre },
+          { label: "価格帯", value: restaurant.priceRange },
+          { label: "M's Visit / M's Wishlist", value: status },
+        ]}
+      />
 
       <ul className="tags">
         {cardTags(restaurant).map((tag) => (
@@ -127,11 +157,10 @@ export default function RestaurantDetail() {
 
       <Section title="メモ">{restaurant.memo ? <p>{restaurant.memo}</p> : null}</Section>
 
+      <MediaSection name={restaurant.mediaName} url={restaurant.mediaUrl} />
+
       <Section title="外部リンク">
-        {restaurant.officialUrl ||
-        restaurant.tabelogUrl ||
-        restaurant.reserveUrl ||
-        (restaurant.mediaName && restaurant.mediaUrl) ? (
+        {restaurant.officialUrl || restaurant.tabelogUrl || restaurant.reserveUrl ? (
           <ul className="links">
             {restaurant.officialUrl ? (
               <li>
@@ -151,13 +180,6 @@ export default function RestaurantDetail() {
               <li>
                 <a href={restaurant.reserveUrl} target="_blank" rel="noreferrer">
                   予約
-                </a>
-              </li>
-            ) : null}
-            {restaurant.mediaName && restaurant.mediaUrl ? (
-              <li>
-                <a href={restaurant.mediaUrl} target="_blank" rel="noreferrer">
-                  {restaurant.mediaName}
                 </a>
               </li>
             ) : null}

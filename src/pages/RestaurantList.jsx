@@ -6,7 +6,9 @@ import ListHeader from "../components/ListHeader.jsx";
 import RestaurantCard from "../components/RestaurantCard.jsx";
 import SearchBar from "../components/SearchBar.jsx";
 import SearchMeta from "../components/SearchMeta.jsx";
+import PageMeta from "../components/PageMeta.jsx";
 import { useData } from "../data/DataProvider.jsx";
+import { DESCRIPTIONS, fullTitle } from "../lib/pageMeta.js";
 import { DOG_POLICIES, FORMALITY, MOODS, SCENES, STATUSES, statusLabel } from "../lib/formOptions.js";
 import { areaLabel, matchesRestaurant, sortPriceRanges, uniqueValues } from "../lib/restaurants.js";
 import { clearParams, getList, getParam, hasParams, setParam, toggleList } from "../lib/urlState.js";
@@ -58,6 +60,7 @@ export default function RestaurantList() {
 
   return (
     <div className="page">
+      <PageMeta title={fullTitle("レストラン")} description={DESCRIPTIONS.restaurants} />
       <ListHeader title="レストラン" addTo="/restaurants/new" />
 
       <div className="toolbar">

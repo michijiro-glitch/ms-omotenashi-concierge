@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+Disallow: /restaurants/new
+Disallow: /gifts/new
+Disallow: /restaurants/*/edit
+Disallow: /gifts/*/edit
+Disallow: /ms-omotenashi-concierge/restaurants/new
+Disallow: /ms-omotenashi-concierge/gifts/new
+Disallow: /ms-omotenashi-concierge/restaurants/*/edit
+Disallow: /ms-omotenashi-concierge/gifts/*/edit

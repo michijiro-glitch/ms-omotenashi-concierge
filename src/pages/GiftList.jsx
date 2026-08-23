@@ -6,7 +6,9 @@ import GiftCard from "../components/GiftCard.jsx";
 import ListHeader from "../components/ListHeader.jsx";
 import SearchBar from "../components/SearchBar.jsx";
 import SearchMeta from "../components/SearchMeta.jsx";
+import PageMeta from "../components/PageMeta.jsx";
 import { useData } from "../data/DataProvider.jsx";
+import { DESCRIPTIONS, fullTitle } from "../lib/pageMeta.js";
 import { GIFT_RECIPIENTS } from "../lib/formOptions.js";
 import { matchesGift } from "../lib/gifts.js";
 import { sortPriceRanges, uniqueValues } from "../lib/restaurants.js";
@@ -54,6 +56,7 @@ export default function GiftList() {
 
   return (
     <div className="page">
+      <PageMeta title={fullTitle("手土産・お取り寄せ")} description={DESCRIPTIONS.gifts} />
       <ListHeader title="手土産・お取り寄せ" addTo="/gifts/new" />
 
       <div className="toolbar">
