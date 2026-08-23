@@ -7,6 +7,7 @@ import ListHeader from "../components/ListHeader.jsx";
 import SearchBar from "../components/SearchBar.jsx";
 import SearchMeta from "../components/SearchMeta.jsx";
 import PageMeta from "../components/PageMeta.jsx";
+import SiteFooter from "../components/SiteFooter.jsx";
 import { useData } from "../data/DataProvider.jsx";
 import { DESCRIPTIONS, fullTitle } from "../lib/pageMeta.js";
 import { GIFT_RECIPIENTS } from "../lib/formOptions.js";
@@ -134,6 +135,7 @@ export default function GiftList() {
           ))}
         </div>
       )}
+      <SiteFooter />
     </div>
   );
 }

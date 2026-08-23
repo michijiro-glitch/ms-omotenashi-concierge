@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import GiftDetail from "./pages/GiftDetail.jsx";
 import GiftEdit from "./pages/GiftEdit.jsx";
 import GiftList from "./pages/GiftList.jsx";
+import About from "./pages/About.jsx";
 import Home from "./pages/Home.jsx";
 import { canEditInApp } from "./lib/sheetWrite.js";
 import RestaurantDetail from "./pages/RestaurantDetail.jsx";
@@ -16,6 +17,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/about" element={<About />} />
       <Route path="/restaurants" element={<RestaurantList />} />
       <Route
         path="/restaurants/new"

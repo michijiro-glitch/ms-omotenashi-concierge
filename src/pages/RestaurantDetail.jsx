@@ -1,6 +1,7 @@
 import { Link, Navigate, useLocation, useParams } from "react-router-dom";
 import Facts from "../components/Facts.jsx";
 import PageMeta from "../components/PageMeta.jsx";
+import SiteFooter from "../components/SiteFooter.jsx";
 import { useData } from "../data/DataProvider.jsx";
 import { statusLabel } from "../lib/formOptions.js";
 import { clipMeta, DESCRIPTIONS, fullTitle } from "../lib/pageMeta.js";
@@ -46,6 +47,7 @@ export default function RestaurantDetail() {
       <div className="page detail-page">
         <PageMeta title={fullTitle("レストラン")} description={DESCRIPTIONS.restaurants} />
         <p className="empty">読み込み中…</p>
+        <SiteFooter />
       </div>
     );
   }
@@ -186,6 +188,7 @@ export default function RestaurantDetail() {
           </ul>
         ) : null}
       </Section>
+      <SiteFooter />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { Link, Navigate, useLocation, useParams } from "react-router-dom";
 import Facts from "../components/Facts.jsx";
 import PageMeta from "../components/PageMeta.jsx";
+import SiteFooter from "../components/SiteFooter.jsx";
 import { useData } from "../data/DataProvider.jsx";
 import { clipMeta, DESCRIPTIONS, fullTitle } from "../lib/pageMeta.js";
 import { canEditInApp } from "../lib/sheetWrite.js";
@@ -28,6 +29,7 @@ export default function GiftDetail() {
       <div className="page detail-page">
         <PageMeta title={fullTitle("手土産・お取り寄せ")} description={DESCRIPTIONS.gifts} />
         <p className="empty">読み込み中…</p>
+        <SiteFooter />
       </div>
     );
   }
@@ -125,6 +127,7 @@ export default function GiftDetail() {
           </p>
         ) : null}
       </Section>
+      <SiteFooter />
     </div>
   );
 }

@@ -62,7 +62,7 @@ export default function RestaurantEdit() {
 
   if (!isNew && loading) {
     return (
-      <div className="page detail-page">
+      <div className="page detail-page edit-page">
         <PageMeta title={fullTitle("直す")} description="編集画面です。" noindex />
         <p className="empty">読み込み中…</p>
       </div>
@@ -74,7 +74,7 @@ export default function RestaurantEdit() {
   }
 
   return (
-    <div className="page detail-page">
+    <div className="page detail-page edit-page">
       <PageMeta
         title={fullTitle(isNew ? "レストランを追加" : `${restaurant.name}を直す`)}
         description="編集画面です。公開サイトでは使いません。"

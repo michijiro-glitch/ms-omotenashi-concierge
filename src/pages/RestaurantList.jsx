@@ -7,6 +7,7 @@ import RestaurantCard from "../components/RestaurantCard.jsx";
 import SearchBar from "../components/SearchBar.jsx";
 import SearchMeta from "../components/SearchMeta.jsx";
 import PageMeta from "../components/PageMeta.jsx";
+import SiteFooter from "../components/SiteFooter.jsx";
 import { useData } from "../data/DataProvider.jsx";
 import { DESCRIPTIONS, fullTitle } from "../lib/pageMeta.js";
 import { DOG_POLICIES, FORMALITY, MOODS, SCENES, STATUSES, statusLabel } from "../lib/formOptions.js";
@@ -150,6 +151,7 @@ export default function RestaurantList() {
           ))}
         </div>
       )}
+      <SiteFooter />
     </div>
   );
 }
