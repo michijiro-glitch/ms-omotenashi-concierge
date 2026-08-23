@@ -1,18 +1,10 @@
 import { useState } from "react";
-import { canEditInApp, getEditToken, setEditToken } from "../lib/sheetWrite.js";
+import { getEditToken, setEditToken } from "../lib/sheetWrite.js";
 
 export default function EditGate({ children }) {
   const [token, setToken] = useState(getEditToken());
   const [draft, setDraft] = useState("");
   const [error, setError] = useState("");
-
-  if (!canEditInApp()) {
-    return (
-      <p className="empty">
-        自分用の画面から直す接続は、まだ入っていません。フォームから送ったあとにシートで直すか、接続の準備が終わってから使ってください。
-      </p>
-    );
-  }
 
   if (token) {
     return children(token);

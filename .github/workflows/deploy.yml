@@ -29,6 +29,7 @@ jobs:
           GITHUB_PAGES: "true"
           VITE_RESTAURANTS_CSV_URL: ${{ secrets.VITE_RESTAURANTS_CSV_URL }}
           VITE_GIFTS_CSV_URL: ${{ secrets.VITE_GIFTS_CSV_URL }}
+          VITE_EDIT_SCRIPT_URL: ${{ secrets.VITE_EDIT_SCRIPT_URL }}
       - run: cp dist/index.html dist/404.html
       - uses: actions/upload-pages-artifact@v3
         with:
