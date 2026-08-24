@@ -58,7 +58,7 @@ export default function GiftList() {
   return (
     <div className="page">
       <PageMeta title={fullTitle("手土産・お取り寄せ")} description={DESCRIPTIONS.gifts} />
-      <ListHeader title="手土産・お取り寄せ" addTo="/gifts/new" />
+      <ListHeader title="手土産・お取り寄せ" />
 
       <div className="toolbar">
         <SearchBar

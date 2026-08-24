@@ -47,8 +47,8 @@ export default function GiftEdit() {
         description="編集画面です。公開サイトでは使いません。"
         noindex
       />
-      <Link className="back" to={isNew ? listPath : `/gifts/${id}`} state={location.state}>
-        {isNew ? "← 一覧に戻る" : "← 詳細に戻る"}
+      <Link className="back" to={isNew ? "/edit" : `/gifts/${id}`} state={location.state}>
+        {isNew ? "← 登録・編集に戻る" : "← 詳細に戻る"}
       </Link>
       <p className="eyebrow">{isNew ? "新規登録" : "直す"}</p>
       <h1 className="detail-name">{isNew ? "手土産・お取り寄せを追加" : gift.name}</h1>

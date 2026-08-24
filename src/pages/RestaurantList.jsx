@@ -62,7 +62,7 @@ export default function RestaurantList() {
   return (
     <div className="page">
       <PageMeta title={fullTitle("レストラン")} description={DESCRIPTIONS.restaurants} />
-      <ListHeader title="レストラン" addTo="/restaurants/new" />
+      <ListHeader title="レストラン" />
 
       <div className="toolbar">
         <SearchBar

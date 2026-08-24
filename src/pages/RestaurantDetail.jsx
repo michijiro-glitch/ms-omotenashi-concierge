@@ -5,7 +5,6 @@ import SiteFooter from "../components/SiteFooter.jsx";
 import { useData } from "../data/DataProvider.jsx";
 import { statusLabel } from "../lib/formOptions.js";
 import { clipMeta, DESCRIPTIONS, fullTitle } from "../lib/pageMeta.js";
-import { canEditInApp } from "../lib/sheetWrite.js";
 import { areaLabel, cardTags, isDogOk, photoSrc } from "../lib/restaurants.js";
 
 function Section({ title, children }) {
@@ -73,11 +72,6 @@ export default function RestaurantDetail() {
       <Link className="back" to={listPath}>
         ← 一覧に戻る
       </Link>
-      {canEditInApp() ? (
-        <Link className="edit-link" to={`/restaurants/${id}/edit`} state={location.state}>
-          直す
-        </Link>
-      ) : null}
 
       <div className="hero">
         {photos[0] ? (
