@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta property="og:title" content="ADS卒業制作｜M's Omotenashi Concierge 開発ストーリー">
+  <meta property="og:description" content="作ったもの、解決する面倒、作りたいと思った理由、工夫と苦戦を一枚に整理した図解。">
+  <meta property="og:type" content="article">
+  <title>ADS卒業制作｜M's Omotenashi Concierge 開発ストーリー</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23FFFFFF'/><rect x='8' y='8' width='84' height='84' rx='14' fill='none' stroke='%233B82F6' stroke-width='4'/><circle cx='32' cy='40' r='10' fill='%233B82F6' opacity='0.8'/><circle cx='68' cy='40' r='10' fill='%2360A5FA' opacity='0.8'/><rect x='25' y='62' width='50' height='6' rx='3' fill='%2394A3B8' opacity='0.6'/><rect x='30' y='74' width='40' height='6' rx='3' fill='%2394A3B8' opacity='0.3'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ads: {
+              bg: '#FFFFFF',
+              surface: '#F8FAFC',
+              hover: '#F1F5F9',
+              border: '#E2E8F0',
+              accent: '#3B82F6',
+              'accent-light': '#2563EB',
+              text: '#1E293B',
+              muted: '#64748B',
+              dim: '#94A3B8',
+              positive: '#10B981',
+              negative: '#EF4444',
+              warning: '#F59E0B',
+            }
+          },
+          fontFamily: {
+            sans: ['"Noto Sans JP"', '"Hiragino Sans"', '"Hiragino Kaku Gothic ProN"', '"Yu Gothic UI"', '"Meiryo"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      body { border-top: none !important; }
+      .rounded-xl { break-inside: avoid; }
+      .md\:flex-row { flex-direction: row !important; }
+      .md\:hidden { display: none !important; }
+      .hidden.md\:block { display: block !important; }
+      .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+      .sm\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+      .md\:mb-20 { margin-bottom: 5rem !important; }
+      .md\:py-16 { padding-top: 4rem !important; padding-bottom: 4rem !important; }
+      .bg-clip-text.text-transparent {
+        -webkit-background-clip: initial !important;
+        background-clip: initial !important;
+        color: #2563EB !important;
+        -webkit-text-fill-color: #2563EB !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-ads-bg text-slate-600 antialiased leading-relaxed border-t-4 border-ads-accent">
+  <div class="no-print max-w-3xl mx-auto px-5 pt-2 flex justify-end">
+    <button onclick="window.print()" class="flex items-center gap-1.5 text-xs text-ads-dim hover:text-ads-accent transition-colors cursor-pointer">
+      <i data-lucide="download" class="w-3.5 h-3.5"></i>
+      PDF
+    </button>
+  </div>
+  <main class="max-w-3xl mx-auto px-5 py-10 md:py-16">
+<!-- CONTENT_START -->
+
+<div class="text-center mb-8 md:mb-10">
+  <div class="inline-flex items-center gap-2 bg-ads-accent/10 text-ads-accent-light px-4 py-1.5 rounded-full text-sm font-medium mb-6">
+    <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+    ADS卒業制作
+  </div>
+  <h1 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight mb-6">
+    M's Omotenashi Concierge<br>
+    <span class="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">開発ストーリー</span>
+  </h1>
+  <p class="text-lg text-ads-muted max-w-xl mx-auto leading-relaxed">
+    作ったもの、解決する面倒、作りたいと思った理由、工夫と苦戦。<br class="hidden sm:block">
+    店数・品数は載せない（これから変わる）。
+  </p>
+</div>
+
+<div class="bg-ads-surface border border-ads-border rounded-2xl p-6 md:p-10 mb-16 md:mb-20">
+  <div class="text-center mb-8">
+    <p class="text-xl md:text-2xl font-black text-slate-900 mb-2">
+      ひとことで言うと<span class="text-ads-accent-light">「頭の中の経験を、再利用できる知識にする」</span>
+    </p>
+    <p class="text-sm text-ads-muted">口コミサイトではなく、M自身の選択眼を残すパーソナル・コンシェルジュ</p>
+  </div>
+  <div class="flex flex-col md:flex-row items-stretch justify-center gap-3 md:gap-0">
+    <div class="flex-1 bg-white border border-ads-border rounded-xl p-4 text-center">
+      <div class="w-8 h-8 rounded-full bg-slate-700 text-white text-sm font-bold flex items-center justify-center mx-auto mb-3">1</div>
+      <i data-lucide="message-circle" class="w-6 h-6 text-slate-600 mx-auto mb-2"></i>
+      <div class="font-bold text-slate-900 text-sm mb-1">経験</div>
+      <div class="text-xs text-ads-muted">店と手土産の相談が、頭の中にだけあった</div>
+    </div>
+    <div class="flex items-center justify-center md:w-10 py-1 md:py-0">
+      <i data-lucide="chevron-right" class="w-5 h-5 text-ads-dim hidden md:block"></i>
+      <i data-lucide="chevron-down" class="w-5 h-5 text-ads-dim md:hidden"></i>
+    </div>
+    <div class="flex-1 bg-white border border-ads-border rounded-xl p-4 text-center">
+      <div class="w-8 h-8 rounded-full bg-blue-500 text-white text-sm font-bold flex items-center justify-center mx-auto mb-3">2</div>
+      <i data-lucide="database" class="w-6 h-6 text-blue-600 mx-auto mb-2"></i>
+      <div class="font-bold text-slate-900 text-sm mb-1">データ化</div>
+      <div class="text-xs text-ads-muted">シートを正本に、自分で育てる</div>
+    </div>
+    <div class="flex items-center justify-center md:w-10 py-1 md:py-0">
+      <i data-lucide="chevron-right" class="w-5 h-5 text-ads-dim hidden md:block"></i>
+      <i data-lucide="chevron-down" class="w-5 h-5 text-ads-dim md:hidden"></i>
+    </div>
+    <div class="flex-1 bg-ads-accent/5 border-2 border-ads-accent/25 rounded-xl p-4 text-center">
+      <div class="w-8 h-8 rounded-full bg-ads-accent text-white text-sm font-bold flex items-center justify-center mx-auto mb-3">3</div>
+      <i data-lucide="search" class="w-6 h-6 text-ads-accent-light mx-auto mb-2"></i>
+      <div class="font-bold text-ads-accent-light text-sm mb-1">探す</div>
+      <div class="text-xs text-ads-muted">条件・フリーワード・音声で呼び出す</div>
+    </div>
+    <div class="flex items-center justify-center md:w-10 py-1 md:py-0">
+      <i data-lucide="chevron-right" class="w-5 h-5 text-ads-dim hidden md:block"></i>
+      <i data-lucide="chevron-down" class="w-5 h-5 text-ads-dim md:hidden"></i>
+    </div>
+    <div class="flex-1 bg-white border border-ads-border rounded-xl p-4 text-center">
+      <div class="w-8 h-8 rounded-full bg-emerald-500 text-white text-sm font-bold flex items-center justify-center mx-auto mb-3">4</div>
+      <i data-lucide="globe" class="w-6 h-6 text-emerald-600 mx-auto mb-2"></i>
+      <div class="font-bold text-slate-900 text-sm mb-1">公開</div>
+      <div class="text-xs text-ads-muted">見る・探すは公開。直すのは自分用</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!--  1. 作ったもの                                                -->
+<!-- ============================================================ -->
+<section class="mb-16 md:mb-20">
+  <div class="flex items-center gap-3 mb-8">
+    <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-500/10 flex-shrink-0">
+      <i data-lucide="layout" class="w-5 h-5 text-blue-600"></i>
+    </div>
+    <h2 class="text-xl md:text-2xl font-bold text-slate-900">作ったもの</h2>
+  </div>
+
+  <p class="mb-6 leading-relaxed">
+    出版社の現場で培った目利きで選ぶ、<strong class="text-slate-900">レストランとギフトのパーソナルガイド</strong>。
+    実際に訪れてよかった店、行ってみたい店、贈って喜ばれた手土産を、M自身の視点でセレクトする公開サイト。
+  </p>
+
+  <div class="rounded-xl border border-dashed border-ads-accent/40 bg-ads-accent/5 p-5 mb-8">
+    <p class="text-sm font-bold text-slate-900 mb-2 flex items-center gap-2">
+      <i data-lucide="external-link" class="w-4 h-4 text-ads-accent"></i>
+      公開用URL
+    </p>
+    <p class="text-sm text-ads-muted mb-3">来客が見る面。登録・修正は出さない。</p>
+    <a href="https://michijiro-glitch.github.io/ms-omotenashi-concierge/" class="inline-flex items-center gap-2 text-sm font-bold text-white bg-ads-accent hover:bg-ads-accent-light px-5 py-2.5 rounded-lg transition-colors no-underline" target="_blank" rel="noopener noreferrer">
+      michijiro-glitch.github.io/ms-omotenashi-concierge
+      <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+    </a>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+    <figure class="bg-ads-surface border border-ads-border rounded-xl overflow-hidden">
+      <img src="/images/home/_verify-home.png" alt="公開トップ：ロゴ、コピー、Restaurant / Gift の2カード" class="w-full h-auto block">
+      <figcaption class="p-4">
+        <p class="font-bold text-slate-900 text-sm">公開｜トップ</p>
+        <p class="text-xs text-ads-muted mt-1">コピーを主役に。大きなイラストは置かず、Restaurant / Gift の2択。</p>
+      </figcaption>
+    </figure>
+    <figure class="bg-ads-surface border border-ads-border rounded-xl overflow-hidden">
+      <img src="/images/about/_preview/about-page-desktop.png" alt="About M：選者の背景とテラスの写真" class="w-full h-auto block">
+      <figcaption class="p-4">
+        <p class="font-bold text-slate-900 text-sm">公開｜About M</p>
+        <p class="text-xs text-ads-muted mt-1">誰が選んでいるのかが、このサービスの価値。</p>
+      </figcaption>
+    </figure>
+    <figure class="bg-ads-surface border border-ads-border rounded-xl overflow-hidden">
+      <img src="/images/home/_verify-restaurants.png" alt="レストラン一覧：検索バー、条件、音声ボタン" class="w-full h-auto block">
+      <figcaption class="p-4">
+        <p class="font-bold text-slate-900 text-sm">公開｜Restaurant</p>
+        <p class="text-xs text-ads-muted mt-1">条件検索・フリーワード・音声。エリア、ジャンル、価格、犬連れなど。</p>
+      </figcaption>
+    </figure>
+    <figure class="bg-ads-surface border border-ads-border rounded-xl overflow-hidden">
+      <img src="/images/home/_verify-gifts.png" alt="手土産一覧：検索バー、カテゴリ、相手・用途" class="w-full h-auto block">
+      <figcaption class="p-4">
+        <p class="font-bold text-slate-900 text-sm">公開｜Gift</p>
+        <p class="text-xs text-ads-muted mt-1">手土産・お取り寄せ。価格、相手・用途で探せる。</p>
+      </figcaption>
+    </figure>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+    <figure class="bg-ads-surface border border-ads-border rounded-xl overflow-hidden">
+      <img src="/images/home/_verify-home-mobile.png" alt="スマホ幅のトップ" class="w-full h-auto block">
+      <figcaption class="p-4">
+        <p class="font-bold text-slate-900 text-sm">公開｜スマホのトップ</p>
+        <p class="text-xs text-ads-muted mt-1">同じコピーと2択。幅が狭くても情報を詰め込まない。</p>
+      </figcaption>
+    </figure>
+    <figure class="bg-ads-surface border border-ads-border rounded-xl overflow-hidden">
+      <img src="/images/about/_preview/about-visit-wishlist.png" alt="M's Visit と M's Wishlist の説明カード" class="w-full h-auto block">
+      <figcaption class="p-4">
+        <p class="font-bold text-slate-900 text-sm">公開｜Visit / Wishlist</p>
+        <p class="text-xs text-ads-muted mt-1">行ったことがある店と、行ってみたい店。ステータスはこの2つ。</p>
+      </figcaption>
+    </figure>
+  </div>
+
+  <div class="rounded-xl border border-dashed border-amber-400/50 bg-amber-50/60 p-5 mb-4">
+    <p class="text-sm font-bold text-slate-900 mb-1 flex items-center gap-2">
+      <i data-lucide="pen-line" class="w-4 h-4 text-amber-600"></i>
+      入力用｜自分専用の /edit
+    </p>
+    <p class="text-sm text-ads-muted leading-relaxed">
+      登録・修正は公開URLとは別の自分用画面。合言葉の先にある（合言葉そのものは図解に書いていない）。
+      来客向けからは新規登録と「直す」を外した。公開側の一覧・詳細と同じカードで直す。
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <figure class="bg-ads-surface border border-ads-border rounded-xl overflow-hidden">
+      <img src="/images/edit/_verify-edit.png" alt="入力用 /edit：追加カードと、直すレストランの一覧" class="w-full h-auto block">
+      <figcaption class="p-4">
+        <p class="font-bold text-slate-900 text-sm">入力｜/edit の一覧</p>
+        <p class="text-xs text-ads-muted mt-1">レストラン／手土産の追加と、公開と同じカードで直す。</p>
+      </figcaption>
+    </figure>
+    <figure class="bg-ads-surface border border-ads-border rounded-xl overflow-hidden">
+      <img src="/images/edit/_verify-edit-restaurant.png" alt="入力用：店の編集フォーム。写真、店名、ステータス" class="w-full h-auto block">
+      <figcaption class="p-4">
+        <p class="font-bold text-slate-900 text-sm">入力｜店を直す</p>
+        <p class="text-xs text-ads-muted mt-1">写真・店名・ステータスなど、自分用の入力フォーム。</p>
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!--  2. 解決する面倒・課題                                        -->
+<!-- ============================================================ -->
+<section class="mb-16 md:mb-20">
+  <div class="flex items-center gap-3 mb-8">
+    <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-amber-500/10 flex-shrink-0">
+      <i data-lucide="alert-circle" class="w-5 h-5 text-amber-600"></i>
+    </div>
+    <h2 class="text-xl md:text-2xl font-bold text-slate-900">解決する面倒・課題</h2>
+  </div>
+
+  <div class="rounded-2xl border border-amber-200/90 bg-amber-50/70 p-6 md:p-7 mb-8">
+    <p class="text-sm font-black text-amber-950 mb-3 flex items-center gap-2">
+      <i data-lucide="lightbulb" class="w-5 h-5 text-amber-600 shrink-0"></i>
+      出発点
+    </p>
+    <p class="text-sm md:text-base text-stone-800 leading-relaxed">
+      頭の中の経験を、<strong class="font-semibold">思い出すだけでなく再利用できる形</strong>にしたい。
+      仕事やプライベートで「どこか良い店を知らない？」「この人への手土産は何がいい？」と聞かれることが多かった。
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+    <div class="bg-ads-surface border border-ads-border rounded-xl p-5">
+      <div class="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center mb-3">
+        <i data-lucide="users" class="w-5 h-5 text-amber-600"></i>
+      </div>
+      <p class="font-bold text-slate-900 text-sm mb-2">よく相談されていた</p>
+      <p class="text-sm text-ads-muted leading-relaxed">会食・レストラン・手土産。判断基準は頭の中に蓄積していたが、その場で思い出すしかなかった。</p>
+    </div>
+    <div class="bg-ads-surface border border-ads-border rounded-xl p-5">
+      <div class="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center mb-3">
+        <i data-lucide="search-x" class="w-5 h-5 text-red-600"></i>
+      </div>
+      <p class="font-bold text-slate-900 text-sm mb-2">その都度調べるのが大変だった</p>
+      <p class="text-sm text-ads-muted leading-relaxed">メモや記憶を毎回たどる。場面（接待、友人、犬連れ）に合う店を、条件で呼び出せなかった。</p>
+    </div>
+    <div class="bg-ads-accent/5 border-2 border-ads-accent/20 rounded-xl p-5">
+      <div class="w-10 h-10 rounded-lg bg-ads-accent/10 flex items-center justify-center mb-3">
+        <i data-lucide="brain" class="w-5 h-5 text-ads-accent-light"></i>
+      </div>
+      <p class="font-bold text-ads-accent-light text-sm mb-2">データ化したかった</p>
+      <p class="text-sm text-ads-muted leading-relaxed">自由メモだけではなく、検索できる項目として残す。暗黙知を、自分と相談相手が使える形にする。</p>
+    </div>
+  </div>
+
+  <div class="bg-ads-accent/5 border border-ads-accent/20 rounded-xl p-5">
+    <div class="flex items-start gap-3">
+      <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-ads-accent/10 flex-shrink-0 mt-0.5">
+        <i data-lucide="lightbulb" class="w-4 h-4 text-ads-accent-light"></i>
+      </div>
+      <div>
+        <p class="font-bold text-ads-accent-light mb-1">ここがポイント</p>
+        <p class="text-ads-muted leading-relaxed text-sm">
+          グルメアプリを作ることが目的ではない。<strong class="text-slate-800">個人の暗黙知を構造化し、検索・音声・将来はAIで再利用可能にする</strong>ことがテーマ。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!--  3. 作りたいと思った理由                                      -->
+<!-- ============================================================ -->
+<section class="mb-16 md:mb-20">
+  <div class="flex items-center gap-3 mb-8">
+    <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-emerald-500/10 flex-shrink-0">
+      <i data-lucide="sparkles" class="w-5 h-5 text-emerald-600"></i>
+    </div>
+    <h2 class="text-xl md:text-2xl font-bold text-slate-900">作りたいと思った理由</h2>
+  </div>
+
+  <p class="mb-8 leading-relaxed">
+    お題を選んだきっかけは、<strong class="text-slate-900">実用的</strong>で、<strong class="text-slate-900">自分の記録にもなる</strong>し、<strong class="text-slate-900">これからもアップデートできる</strong>こと。
+  </p>
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+    <div class="bg-ads-surface border border-ads-border rounded-xl p-6 text-center">
+      <i data-lucide="briefcase" class="w-6 h-6 text-ads-accent mx-auto mb-3"></i>
+      <p class="font-bold text-slate-900 mb-2">実用的</p>
+      <p class="text-sm text-ads-muted">相談されたその場で、条件から店や手土産を呼び出せる。</p>
+    </div>
+    <div class="bg-ads-surface border border-ads-border rounded-xl p-6 text-center">
+      <i data-lucide="notebook-pen" class="w-6 h-6 text-emerald-600 mx-auto mb-3"></i>
+      <p class="font-bold text-slate-900 mb-2">自分の記録にもなる</p>
+      <p class="text-sm text-ads-muted">行った店、贈りたい手土産を、自分用の備忘録として残せる。</p>
+    </div>
+    <div class="bg-ads-surface border border-ads-border rounded-xl p-6 text-center">
+      <i data-lucide="refresh-cw" class="w-6 h-6 text-amber-600 mx-auto mb-3"></i>
+      <p class="font-bold text-slate-900 mb-2">これからもアップデートできる</p>
+      <p class="text-sm text-ads-muted">シートに足せば公開側も育つ。卒業制作で止めない前提。</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="bg-white border border-ads-border rounded-xl p-5">
+      <p class="text-xs font-bold tracking-wider text-ads-accent mb-2">最初のコンセプト</p>
+      <p class="font-bold text-slate-900 mb-2">一般的な口コミサイトではない</p>
+      <p class="text-sm text-ads-muted leading-relaxed">M自身の経験と選択眼を集めたパーソナル・コンシェルジュにする。</p>
+    </div>
+    <div class="bg-white border border-ads-border rounded-xl p-5">
+      <p class="text-xs font-bold tracking-wider text-ads-accent mb-2">最初のコンセプト</p>
+      <p class="font-bold text-slate-900 mb-2">Restaurant と Gift の2領域に絞る</p>
+      <p class="text-sm text-ads-muted leading-relaxed">網羅性よりも「自分が選んだ理由」「どんな場面に向くか」を重視する。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!--  4. 工夫したポイントと苦戦したポイント                        -->
+<!-- ============================================================ -->
+<section class="mb-16 md:mb-20">
+  <div class="flex items-center gap-3 mb-8">
+    <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-violet-500/10 flex-shrink-0">
+      <i data-lucide="wrench" class="w-5 h-5 text-violet-600"></i>
+    </div>
+    <h2 class="text-xl md:text-2xl font-bold text-slate-900">工夫したポイントと苦戦したポイント</h2>
+  </div>
+  <p class="mb-8 leading-relaxed">
+    テクニカルなところは Cursor 上の指示と往復で進めた。宣伝ではなく、実際にやった実装・修正の記録。
+  </p>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+    <div class="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-6">
+      <div class="inline-flex items-center gap-1.5 bg-emerald-500/10 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold tracking-wide mb-5">
+        <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+        工夫したポイント
+      </div>
+      <ul class="space-y-3 text-sm">
+        <li class="flex items-start gap-2.5">
+          <i data-lucide="check" class="w-4 h-4 text-emerald-600 mt-1 flex-shrink-0"></i>
+          <span>シートを正本にする。アプリで直してもシートに残る</span>
+        </li>
+        <li class="flex items-start gap-2.5">
+          <i data-lucide="check" class="w-4 h-4 text-emerald-600 mt-1 flex-shrink-0"></i>
+          <span>公開は <strong class="text-slate-800">/</strong>、入力は <strong class="text-slate-800">/edit</strong>。来客に登録を出さない</span>
+        </li>
+        <li class="flex items-start gap-2.5">
+          <i data-lucide="check" class="w-4 h-4 text-emerald-600 mt-1 flex-shrink-0"></i>
+          <span>Visit / Wishlist の2ステータス。M's Choice は将来の特集用</span>
+        </li>
+        <li class="flex items-start gap-2.5">
+          <i data-lucide="check" class="w-4 h-4 text-emerald-600 mt-1 flex-shrink-0"></i>
+          <span>条件・フリーワード・音声。IME変換中は検索を待たせる</span>
+        </li>
+        <li class="flex items-start gap-2.5">
+          <i data-lucide="check" class="w-4 h-4 text-emerald-600 mt-1 flex-shrink-0"></i>
+          <span>トップはコピー主役。About M で選者の信用を置く</span>
+        </li>
+      </ul>
+    </div>
+    <div class="bg-amber-500/5 border border-amber-500/20 rounded-xl p-6">
+      <div class="inline-flex items-center gap-1.5 bg-amber-500/10 text-amber-700 px-3 py-1 rounded-full text-xs font-bold tracking-wide mb-5">
+        <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i>
+        苦戦したポイント
+      </div>
+      <ul class="space-y-3 text-sm">
+        <li class="flex items-start gap-2.5">
+          <i data-lucide="x" class="w-4 h-4 text-amber-600 mt-1 flex-shrink-0"></i>
+          <span>Apps Script：実行できない・無題のまま・送信がグレー</span>
+        </li>
+        <li class="flex items-start gap-2.5">
+          <i data-lucide="x" class="w-4 h-4 text-amber-600 mt-1 flex-shrink-0"></i>
+          <span>写真：iPhone投入、ボード切り出しの黒フチ、円切り抜きの往復</span>
+        </li>
+        <li class="flex items-start gap-2.5">
+          <i data-lucide="x" class="w-4 h-4 text-amber-600 mt-1 flex-shrink-0"></i>
+          <span>直すリストの写真が消えた → 公開と同じカードに戻した</span>
+        </li>
+        <li class="flex items-start gap-2.5">
+          <i data-lucide="x" class="w-4 h-4 text-amber-600 mt-1 flex-shrink-0"></i>
+          <span>IME：変換中に検索が走ると日本語が崩れる。公開でも直るまで往復</span>
+        </li>
+        <li class="flex items-start gap-2.5">
+          <i data-lucide="x" class="w-4 h-4 text-amber-600 mt-1 flex-shrink-0"></i>
+          <span>GitHub Pages と Simple Browser の接続拒否（-102）。開発サーバー未起動が原因</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 class="text-lg font-bold text-slate-900 text-center mb-6">ここまでやってきたプロセス</h3>
+  <div class="rounded-2xl border border-ads-border bg-ads-surface p-6 md:p-8 mb-10">
+    <div class="max-w-lg mx-auto">
+      <div class="flex gap-4">
+        <div class="flex flex-col items-center shrink-0 w-9">
+          <span class="w-9 h-9 rounded-full bg-slate-700 text-white text-xs font-black flex items-center justify-center">1</span>
+          <div class="w-0.5 flex-1 min-h-[28px] bg-slate-200"></div>
+        </div>
+        <div class="pb-8 pt-1">
+          <p class="font-bold text-slate-900">指示書を置いて Grill Me</p>
+          <p class="text-sm text-ads-muted mt-1">実装せず1問ずつ。PCブラウザ中心、一覧から始める、登録は後から、いきなりAIは作らない。写真は複数枚、犬連れ枠を追加。</p>
+        </div>
+      </div>
+      <div class="flex gap-4">
+        <div class="flex flex-col items-center shrink-0 w-9">
+          <span class="w-9 h-9 rounded-full bg-violet-600 text-white text-xs font-black flex items-center justify-center">2</span>
+          <div class="w-0.5 flex-1 min-h-[28px] bg-violet-200"></div>
+        </div>
+        <div class="pb-8 pt-1">
+          <p class="font-bold text-slate-900">データの置き場所</p>
+          <p class="text-sm text-ads-muted mt-1">店・手土産の正本は Google シート。公開サイトはシートの CSV を読む。アプリからの保存は Apps Script でシートへ書き戻す。<strong class="text-slate-800">アプリで直してもシートに残る</strong>。最初の種データはリポジトリ内の JSON。シート接続後は、失敗しても種データへ黙って戻さない。サーバーは立てていない。</p>
+        </div>
+      </div>
+      <div class="flex gap-4">
+        <div class="flex flex-col items-center shrink-0 w-9">
+          <span class="w-9 h-9 rounded-full bg-blue-600 text-white text-xs font-black flex items-center justify-center">3</span>
+          <div class="w-0.5 flex-1 min-h-[28px] bg-blue-200"></div>
+        </div>
+        <div class="pb-8 pt-1">
+          <p class="font-bold text-slate-900">写真</p>
+          <p class="text-sm text-ads-muted mt-1">店舗写真は撮影または店舗提供のURL。デザイン用イラストはサイト内の画像。iPhoneの写真を入れたい、ボード切り出しは黒フチで失敗、透過PNGをそのまま使う。テラス差し替え、円切り抜きの往復。</p>
+        </div>
+      </div>
+      <div class="flex gap-4">
+        <div class="flex flex-col items-center shrink-0 w-9">
+          <span class="w-9 h-9 rounded-full bg-ads-accent text-white text-xs font-black flex items-center justify-center">4</span>
+          <div class="w-0.5 flex-1 min-h-[28px] bg-blue-200"></div>
+        </div>
+        <div class="pb-8 pt-1">
+          <p class="font-bold text-ads-accent-light">公開用と入力を分けた</p>
+          <p class="text-sm text-ads-muted mt-1">来客は <strong class="text-slate-800">/</strong>、自分用は <strong class="text-slate-800">/edit</strong>。来客向けから新規登録と直すを外す。直すリストの写真が消えたので、公開と同じカードに戻した。行ったことがあるを上に。</p>
+        </div>
+      </div>
+      <div class="flex gap-4">
+        <div class="flex flex-col items-center shrink-0 w-9">
+          <span class="w-9 h-9 rounded-full bg-sky-600 text-white text-xs font-black flex items-center justify-center">5</span>
+          <div class="w-0.5 flex-1 min-h-[28px] bg-sky-200"></div>
+        </div>
+        <div class="pb-8 pt-1">
+          <p class="font-bold text-slate-900">分類項目</p>
+          <p class="text-sm text-ads-muted mt-1">Restaurant：エリア、ジャンル、価格、フォーマル度、利用シーン、雰囲気、犬連れ。Gift：価格、相手・用途、日持ち・保存。ステータスは Visit / Wishlist の2つ。M's Choice は特集用で、ステータスではない。</p>
+        </div>
+      </div>
+      <div class="flex gap-4">
+        <div class="flex flex-col items-center shrink-0 w-9">
+          <span class="w-9 h-9 rounded-full bg-cyan-600 text-white text-xs font-black flex items-center justify-center">6</span>
+          <div class="w-0.5 flex-1 min-h-[28px] bg-cyan-200"></div>
+        </div>
+        <div class="pb-8 pt-1">
+          <p class="font-bold text-slate-900">検索機能</p>
+          <p class="text-sm text-ads-muted mt-1">Restaurant / Gift に条件検索・フリーワード。条件はURLに残す。IMEは composition 中は待ってから検索。音声は Web Speech（日本語）。AI APIは使わず、既存検索に渡す。</p>
+        </div>
+      </div>
+      <div class="flex gap-4">
+        <div class="flex flex-col items-center shrink-0 w-9">
+          <span class="w-9 h-9 rounded-full bg-emerald-600 text-white text-xs font-black flex items-center justify-center">7</span>
+          <div class="w-0.5 flex-1 min-h-[28px] bg-emerald-200"></div>
+        </div>
+        <div class="pb-8 pt-1">
+          <p class="font-bold text-slate-900">デザイン</p>
+          <p class="text-sm text-ads-muted mt-1">アイボリー、ネイビー、控えめなゴールド。女性向けすぎる表現を避け、男女とも使える上質で知的なトーン。About M の原稿と構成。チェックリストから「友人に喜んでもらえるか」「席のしつらえ」を外す。トップはロゴ＋コピー＋2カード。</p>
+        </div>
+      </div>
+      <div class="flex gap-4">
+        <div class="flex flex-col items-center shrink-0 w-9">
+          <span class="w-9 h-9 rounded-full bg-stone-600 text-white text-xs font-black flex items-center justify-center">8</span>
+        </div>
+        <div class="pt-1">
+          <p class="font-bold text-slate-900">Cursorで進めた公開と修正</p>
+          <p class="text-sm text-ads-muted mt-1">GitHub Pages に出す。管理画面のスマホ対応。登録に入れないときは書き込み接続と /edit ルートを見る。修正のたびにバグが出て、その都度直した。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-ads-surface border border-ads-border rounded-2xl p-6 md:p-8 mb-4">
+    <p class="text-center text-sm font-bold text-slate-900 mb-6">データが残る流れ</p>
+    <div class="flex flex-col md:flex-row items-stretch justify-center gap-3 md:gap-0">
+      <div class="flex-1 bg-ads-accent/5 border-2 border-ads-accent/25 rounded-xl p-4 text-center">
+        <div class="w-8 h-8 rounded-full bg-ads-accent text-white text-sm font-bold flex items-center justify-center mx-auto mb-2">1</div>
+        <p class="font-bold text-ads-accent-light text-sm">シート</p>
+        <p class="text-xs text-ads-muted mt-1">店と手土産が残る置き場</p>
+      </div>
+      <div class="flex items-center justify-center md:w-10 py-1 md:py-0">
+        <i data-lucide="arrow-right" class="w-5 h-5 text-ads-accent hidden md:block"></i>
+        <i data-lucide="arrow-down" class="w-5 h-5 text-ads-accent md:hidden"></i>
+      </div>
+      <div class="flex-1 bg-white border border-ads-border rounded-xl p-4 text-center">
+        <div class="w-8 h-8 rounded-full bg-slate-600 text-white text-sm font-bold flex items-center justify-center mx-auto mb-2">2</div>
+        <p class="font-bold text-slate-900 text-sm">アプリ</p>
+        <p class="text-xs text-ads-muted mt-1">見る・探す。/edit で直す</p>
+      </div>
+      <div class="flex items-center justify-center md:w-10 py-1 md:py-0">
+        <i data-lucide="arrow-right" class="w-5 h-5 text-ads-accent hidden md:block"></i>
+        <i data-lucide="arrow-down" class="w-5 h-5 text-ads-accent md:hidden"></i>
+      </div>
+      <div class="flex-1 bg-white border border-ads-border rounded-xl p-4 text-center">
+        <div class="w-8 h-8 rounded-full bg-slate-600 text-white text-sm font-bold flex items-center justify-center mx-auto mb-2">3</div>
+        <p class="font-bold text-slate-900 text-sm">書き戻し</p>
+        <p class="text-xs text-ads-muted mt-1">Apps Script でシート更新</p>
+      </div>
+      <div class="flex items-center justify-center md:w-10 py-1 md:py-0">
+        <i data-lucide="arrow-right" class="w-5 h-5 text-ads-accent hidden md:block"></i>
+        <i data-lucide="arrow-down" class="w-5 h-5 text-ads-accent md:hidden"></i>
+      </div>
+      <div class="flex-1 bg-white border border-ads-border rounded-xl p-4 text-center">
+        <div class="w-8 h-8 rounded-full bg-emerald-500 text-white text-sm font-bold flex items-center justify-center mx-auto mb-2">4</div>
+        <p class="font-bold text-slate-900 text-sm">公開表示</p>
+        <p class="text-xs text-ads-muted mt-1">公開サイトが CSV を読む</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!--  補足：コンセプトの続き / これから                            -->
+<!-- ============================================================ -->
+<section class="mb-16 md:mb-20">
+  <div class="flex items-center gap-3 mb-8">
+    <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-slate-500/10 flex-shrink-0">
+      <i data-lucide="map" class="w-5 h-5 text-slate-600"></i>
+    </div>
+    <h2 class="text-xl md:text-2xl font-bold text-slate-900">コンセプトの続きと、これから</h2>
+  </div>
+
+  <div class="bg-white border border-ads-border rounded-xl p-5 mb-6">
+    <p class="text-xs font-bold tracking-wider text-ads-dim mb-2">メインコピー</p>
+    <p class="font-bold text-slate-900">出版社の現場で培った目利きで選ぶ、レストランとギフトのパーソナルガイド</p>
+    <p class="text-sm text-ads-muted mt-2">About M で詳しく背景を説明し、トップでは価値を短く伝える役割分担にした。</p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+    <div class="bg-ads-surface border border-ads-border rounded-xl p-5">
+      <p class="font-bold text-slate-900 text-sm mb-2">M's Choice の構想（未実装）</p>
+      <p class="text-sm text-ads-muted leading-relaxed">テーマを決めて選ぶ特集。例：個室で接待に使える店、グラスでワインが楽しめる店、日持ちする手土産。</p>
+    </div>
+    <div class="bg-ads-surface border border-ads-border rounded-xl p-5">
+      <p class="font-bold text-slate-900 text-sm mb-2">note 連携の構想</p>
+      <p class="text-sm text-ads-muted leading-relaxed">アプリでは探す・比較する。noteでは詳しく読む。最初は数店舗だけ記事を書き、URLをアプリに紐づける。</p>
+    </div>
+    <div class="bg-ads-surface border border-ads-border rounded-xl p-5">
+      <p class="font-bold text-slate-900 text-sm mb-2">AI連携の今後</p>
+      <p class="text-sm text-ads-muted leading-relaxed">現時点ではAI API未接続。世の中の店を推薦させるのではなく、M自身の登録データを呼び出す。</p>
+    </div>
+    <div class="bg-ads-surface border border-ads-border rounded-xl p-5">
+      <p class="font-bold text-slate-900 text-sm mb-2">マネタイズ（検討中）</p>
+      <p class="text-sm text-ads-muted leading-relaxed">いまは無料で増やす。つぎは送客とnote。その先は相談と法人。資産はコードではなく、経験と選定データ。</p>
+    </div>
+  </div>
+
+  <div class="space-y-4 mb-8">
+    <div class="bg-ads-surface border border-ads-border rounded-xl p-6 border-l-4 border-l-blue-500">
+      <div class="flex items-start gap-4">
+        <div class="text-2xl font-black text-blue-500 leading-none flex-shrink-0 mt-1">01</div>
+        <div>
+          <h3 class="font-bold text-slate-900 mb-2">自分のための備忘録から始まった</h3>
+          <p class="text-sm text-ads-muted leading-relaxed">相談されていた経験を、思い出すだけでなく呼び出せる形にした。</p>
+        </div>
+      </div>
+    </div>
+    <div class="bg-ads-surface border border-ads-border rounded-xl p-6 border-l-4 border-l-emerald-500">
+      <div class="flex items-start gap-4">
+        <div class="text-2xl font-black text-emerald-500 leading-none flex-shrink-0 mt-1">02</div>
+        <div>
+          <h3 class="font-bold text-slate-900 mb-2">シートが置き場。アプリは見る・探す・直す</h3>
+          <p class="text-sm text-ads-muted leading-relaxed">直した内容はシートに残る。ブラウザの一時記憶だけではない。</p>
+        </div>
+      </div>
+    </div>
+    <div class="bg-ads-surface border border-ads-border rounded-xl p-6 border-l-4 border-l-amber-500">
+      <div class="flex items-start gap-4">
+        <div class="text-2xl font-black text-amber-500 leading-none flex-shrink-0 mt-1">03</div>
+        <div>
+          <h3 class="font-bold text-slate-900 mb-2">暗黙知を再利用可能な知識に変える</h3>
+          <p class="text-sm text-ads-muted leading-relaxed">検索・音声・将来はAI。個人版から、会食・贈答のナレッジへ広げられる。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="rounded-xl border border-ads-border bg-white p-5 text-center">
+  <p class="text-xs text-ads-dim">合言葉は図解に載せていない。このページは公開サイトのナビには出していない。</p>
+</div>
+
+<!-- CONTENT_END -->
+  </main>
+  <footer class="max-w-3xl mx-auto px-5 pb-10 pt-6 border-t border-ads-border/30">
+    <p class="text-xs text-ads-dim text-center">AI-Driven School の図解ツールで作成</p>
+  </footer>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>lucide.createIcons();</script>
+</body>
+</html>

@@ -16,5 +16,5 @@ function copySpaFallback() {
 export default defineConfig({
   plugins: [react(), copySpaFallback()],
   base: process.env.GITHUB_PAGES === "true" ? "/ms-omotenashi-concierge/" : "/",
+  server: { host: "127.0.0.1", port: 5173 },
 });
-
