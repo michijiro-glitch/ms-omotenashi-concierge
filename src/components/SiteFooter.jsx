@@ -7,26 +7,30 @@ const LINKS = [
   { to: "/gifts", label: "Gift" },
 ];
 
-export default function SiteFooter() {
+export default function SiteFooter({ variant = "full" }) {
+  const isHome = variant === "home";
+
   return (
-    <footer className="site-footer">
-      <nav className="site-footer-nav" aria-label="サイト内リンク">
-        {LINKS.map((link, index) => (
-          <span key={link.to} className="site-footer-item">
-            {index > 0 ? (
-              <span className="site-footer-sep" aria-hidden="true">
-                ｜
-              </span>
-            ) : null}
-            <NavLink
-              to={link.to}
-              className={({ isActive }) => (isActive ? "site-footer-link is-active" : "site-footer-link")}
-            >
-              {link.label}
-            </NavLink>
-          </span>
-        ))}
-      </nav>
+    <footer className={isHome ? "site-footer site-footer-home" : "site-footer"}>
+      {isHome ? null : (
+        <nav className="site-footer-nav" aria-label="サイト内リンク">
+          {LINKS.map((link, index) => (
+            <span key={link.to} className="site-footer-item">
+              {index > 0 ? (
+                <span className="site-footer-sep" aria-hidden="true">
+                  ｜
+                </span>
+              ) : null}
+              <NavLink
+                to={link.to}
+                className={({ isActive }) => (isActive ? "site-footer-link is-active" : "site-footer-link")}
+              >
+                {link.label}
+              </NavLink>
+            </span>
+          ))}
+        </nav>
+      )}
       <p className="site-footer-copy">© 2026 {SITE_NAME}. All Rights Reserved.</p>
     </footer>
   );
