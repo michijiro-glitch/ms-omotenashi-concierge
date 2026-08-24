@@ -11,7 +11,7 @@ function Stars({ value }) {
   );
 }
 
-export default function RestaurantCard({ restaurant }) {
+export default function RestaurantCard({ restaurant, to }) {
   const location = useLocation();
   const visited = restaurant.status === "行ったことがある";
   const photo = firstPhoto(restaurant);
@@ -20,7 +20,7 @@ export default function RestaurantCard({ restaurant }) {
   return (
     <Link
       className="card"
-      to={`/restaurants/${restaurant.id}`}
+      to={to ?? `/restaurants/${restaurant.id}`}
       state={{ listSearch: location.search }}
     >
       <div className="card-photo">

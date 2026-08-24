@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
 import EditGate from "../components/EditGate.jsx";
+import GiftCard from "../components/GiftCard.jsx";
 import PageMeta from "../components/PageMeta.jsx";
+import RestaurantCard from "../components/RestaurantCard.jsx";
+import SiteFooter from "../components/SiteFooter.jsx";
 import { useData } from "../data/DataProvider.jsx";
 import { fullTitle } from "../lib/pageMeta.js";
 
@@ -8,7 +11,7 @@ export default function EditHub() {
   const { restaurants, gifts, loading } = useData();
 
   return (
-    <div className="page detail-page edit-page">
+    <div className="page edit-page">
       <PageMeta title={fullTitle("登録・編集")} description="自分用の登録・編集画面です。" noindex />
       <Link className="back" to="/">
         ← トップ
@@ -38,13 +41,15 @@ export default function EditHub() {
                 <section className="edit-hub-existing" aria-label="レストランを直す">
                   <h2>レストランを直す</h2>
                   {restaurants.length ? (
-                    <ul className="links">
+                    <div className="card-grid">
                       {restaurants.map((restaurant) => (
-                        <li key={restaurant.id}>
-                          <Link to={`/edit/restaurants/${restaurant.id}`}>{restaurant.name}</Link>
-                        </li>
+                        <RestaurantCard
+                          key={restaurant.id}
+                          restaurant={restaurant}
+                          to={`/edit/restaurants/${restaurant.id}`}
+                        />
                       ))}
-                    </ul>
+                    </div>
                   ) : (
                     <p className="empty">まだ登録がありません。</p>
                   )}
@@ -52,13 +57,11 @@ export default function EditHub() {
                 <section className="edit-hub-existing" aria-label="手土産を直す">
                   <h2>手土産を直す</h2>
                   {gifts.length ? (
-                    <ul className="links">
+                    <div className="card-grid">
                       {gifts.map((gift) => (
-                        <li key={gift.id}>
-                          <Link to={`/edit/gifts/${gift.id}`}>{gift.name}</Link>
-                        </li>
+                        <GiftCard key={gift.id} gift={gift} to={`/edit/gifts/${gift.id}`} />
                       ))}
-                    </ul>
+                    </div>
                   ) : (
                     <p className="empty">まだ登録がありません。</p>
                   )}
@@ -68,6 +71,7 @@ export default function EditHub() {
           </>
         )}
       </EditGate>
+      <SiteFooter />
     </div>
   );
 }

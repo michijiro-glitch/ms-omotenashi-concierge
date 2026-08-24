@@ -10,12 +10,12 @@ function Stars({ value }) {
   );
 }
 
-export default function GiftCard({ gift }) {
+export default function GiftCard({ gift, to }) {
   const location = useLocation();
   const photo = firstGiftPhoto(gift);
 
   return (
-    <Link className="card" to={`/gifts/${gift.id}`} state={{ listSearch: location.search }}>
+    <Link className="card" to={to ?? `/gifts/${gift.id}`} state={{ listSearch: location.search }}>
       <div className="card-photo">
         {photo ? (
           <img src={photo} alt={gift.name} />
