@@ -139,13 +139,27 @@
       margin: 0;
       padding-left: 1.1em;
     }
+    .slide-shots {
+      justify-content: flex-start;
+      padding-top: 22px;
+      padding-bottom: 56px;
+    }
+    .slide-shots .shots {
+      flex: 1 1 0;
+      height: 0;
+      min-height: 0;
+    }
     .shots {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      width: min(1000px, 100%);
+      grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 10px 12px;
+      width: min(1040px, 100%);
     }
     .shot {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      min-height: 0;
       background: #fff;
       border: 1px solid var(--line);
       overflow: hidden;
@@ -154,9 +168,15 @@
     .shot img {
       display: block;
       width: 100%;
-      height: 168px;
-      object-fit: cover;
-      object-position: top;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+    }
+    .shot-frame {
+      min-height: 0;
+      height: 100%;
+      overflow: hidden;
+      background: var(--paper);
     }
     .shot p {
       margin: 0;
@@ -246,13 +266,17 @@
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
       gap: 12px;
-      width: min(1000px, 100%);
+      width: min(1080px, 100%);
       text-align: left;
+      flex: 1;
+      align-content: stretch;
+      min-height: 0;
     }
     .stage {
       background: #fff;
       border: 1px solid var(--line);
       padding: 18px 18px 20px;
+      min-height: 0;
     }
     .stage b {
       display: block;
@@ -268,9 +292,15 @@
       font-size: 13px;
       line-height: 1.75;
     }
-    .stage ol, .stage ul {
+    .stage ul {
       margin: 0;
       padding-left: 1.15em;
+    }
+    .timeline {
+      margin: 16px 0 0;
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      color: var(--ink-soft);
     }
     .closer {
       margin-top: 18px;
@@ -313,10 +343,24 @@
       cursor: pointer;
       font-family: inherit;
     }
-    .bar button:hover { border-color: var(--gold); }
+    .bar span { display: flex; gap: 8px; align-items: center; }
+    @media print {
+      html, body, .deck { height: auto; overflow: visible; background: var(--ivory); }
+      .bar { display: none !important; }
+      .slide {
+        display: flex !important;
+        height: 100vh;
+        page-break-after: always;
+        break-after: page;
+        padding: 28px 36px;
+      }
+      .slide:last-of-type { page-break-after: auto; break-after: auto; }
+      .shot img { height: auto; max-height: 38vh; object-fit: contain; }
+    }
     @media (max-width: 900px) {
       .slide { padding: 24px 16px 64px; }
-      .quotes, .cards-3, .cards-4, .shots, .stages, .now-next { grid-template-columns: 1fr; }
+      .quotes, .cards-3, .cards-4, .stages, .now-next { grid-template-columns: 1fr; }
+      .slide-shots .shots { grid-template-columns: 1fr 1fr; }
       .arrow { transform: rotate(90deg); width: 100%; justify-content: center; }
     }
   </style>
@@ -356,25 +400,25 @@
       <p class="sub">お店選びも、ギフトの品選びも、その人を表す。<br>判断基準は頭の中にあった。でも、その場で思い出すしかなかった。</p>
     </section>
 
-    <section class="slide">
+    <section class="slide slide-shots">
       <p class="kicker">作ったもの</p>
       <h2>見る・探すは公開。直すのは自分用</h2>
       <div class="gold-rule"></div>
       <div class="shots">
         <figure class="shot">
-          <img src="images/home/_verify-home.png" alt="トップ">
+          <div class="shot-frame"><img src="images/home/_verify-home.png" alt="トップ"></div>
           <p>公開｜トップ　ロゴ＋コピー＋Restaurant / Gift</p>
         </figure>
         <figure class="shot">
-          <img src="images/home/_verify-restaurants.png" alt="Restaurant">
+          <div class="shot-frame"><img src="images/home/_verify-restaurants.png" alt="Restaurant"></div>
           <p>公開｜Restaurant　条件・フリーワード・音声</p>
         </figure>
         <figure class="shot">
-          <img src="images/about/_preview/about-visit-wishlist.png" alt="Visit Wishlist">
+          <div class="shot-frame"><img src="images/about/_preview/about-visit-wishlist.png" alt="Visit Wishlist"></div>
           <p>公開｜Visit / Wishlist　店舗ステータス</p>
         </figure>
         <figure class="shot">
-          <img src="images/edit/_verify-edit.png" alt="edit">
+          <div class="shot-frame"><img src="images/edit/_verify-edit.png" alt="edit"></div>
           <p>入力｜非公開 /edit　Googleフォームから移した</p>
         </figure>
       </div>
@@ -451,37 +495,57 @@
     </section>
 
     <section class="slide">
-      <p class="kicker">今後</p>
-      <h2>備忘録から、知識へ</h2>
+      <p class="kicker">今後の計画</p>
+      <h2>検索から、知識へ</h2>
       <div class="gold-rule"></div>
       <div class="stages">
         <div class="stage">
           <b>現在</b>
-          <p>条件検索・音声検索。無料で利用者とデータを増やす。予約・購入へ送客する土台。</p>
+          <ul>
+            <li>条件検索・音声検索</li>
+            <li>無料で利用者とデータを増やす</li>
+            <li>予約・購入へ送客する土台</li>
+          </ul>
         </div>
         <div class="stage">
           <b>次</b>
-          <ol>
+          <ul>
             <li>AI自然文検索・登録支援</li>
             <li>M's Choice 特集</li>
             <li>noteで読む → アプリで探す・比較 → 予約／EC</li>
-          </ol>
+          </ul>
         </div>
         <div class="stage">
           <b>将来</b>
-          <p>個別コンシェルジュ。法人の会食・贈答ナレッジ。「この相手ならこの店」「この場面ならこの手土産」。</p>
+          <ul>
+            <li>個別コンシェルジュ</li>
+            <li>法人の会食・贈答ナレッジ</li>
+            <li>「この相手ならこの店」</li>
+            <li>「この場面ならこの手土産」</li>
+          </ul>
         </div>
       </div>
+      <p class="timeline">経験 → 構造化 → 検索 → 音声 → 公開 → AI → 個人 → 法人</p>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">これから</p>
+      <h2>備忘録から、知識へ</h2>
+      <div class="gold-rule"></div>
       <p class="asset">資産はUIやコードではなく、経験・選定データ・蓄積された知識。</p>
       <p class="closer">自分のための備忘録　→　シートとアプリ　→　暗黙知を再利用可能な知識へ</p>
+      <p class="asset">ADSのチームgraceの皆様、半年間ご一緒させていただきありがとうございました。<br>これからも学びを続けていきたいと思います。</p>
       <p class="asset">是非見ていただいて、お気づきの点やアイデアなどいただけましたら嬉しいです。<br>マコなり社長ともぜひコラボしたいです。よろしくお願いします。</p>
     </section>
   </div>
 
   <div class="bar">
     <button type="button" id="prev">戻る</button>
-    <span id="pos">1 / 8</span>
-    <button type="button" id="next">次へ</button>
+    <span id="pos">1 / 9</span>
+    <span>
+      <button type="button" id="pdf">PDF</button>
+      <button type="button" id="next">次へ</button>
+    </span>
   </div>
 
   <script>
@@ -494,6 +558,7 @@
     }
     document.getElementById("prev").onclick = () => show(i - 1);
     document.getElementById("next").onclick = () => show(i + 1);
+    document.getElementById("pdf").onclick = () => window.print();
     document.addEventListener("keydown", (e) => {
       if (["ArrowRight", "PageDown", " ", "Enter"].includes(e.key)) { e.preventDefault(); show(i + 1); }
       if (["ArrowLeft", "PageUp", "Backspace"].includes(e.key)) { e.preventDefault(); show(i - 1); }
