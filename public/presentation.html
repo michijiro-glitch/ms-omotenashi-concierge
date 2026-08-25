@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+  <title>M's Omotenashi Concierge｜6分発表</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Noto+Sans+JP:wght@400;500&family=Noto+Serif+JP:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f4efe6;
+      --ink: #2b241c;
+      --ink-soft: #6b5e4e;
+      --line: #d7ccba;
+      --navy: #243056;
+      --gold: #c4a36a;
+      --ivory: #fbf8f2;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: var(--paper);
+      color: var(--navy);
+      font-family: "Noto Sans JP", sans-serif;
+    }
+    .deck { height: 100%; overflow: hidden; }
+    .slide {
+      display: none;
+      height: 100%;
+      padding: 36px 52px 68px;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: var(--ivory);
+    }
+    .slide.is-on { display: flex; }
+    .kicker {
+      font-size: 11px;
+      letter-spacing: 0.28em;
+      color: var(--gold);
+      margin: 0 0 10px;
+    }
+    h2 {
+      margin: 0 0 8px;
+      font-family: "Noto Serif JP", "Cormorant Garamond", serif;
+      font-weight: 500;
+      font-size: clamp(20px, 2.6vw, 30px);
+      letter-spacing: 0.05em;
+      color: var(--navy);
+    }
+    .logo {
+      width: min(260px, 50vw);
+      height: auto;
+      display: block;
+      margin: 0 auto 4px;
+    }
+    .gold-rule {
+      width: min(200px, 50%);
+      height: 1px;
+      margin: 14px auto 18px;
+      background: var(--gold);
+      position: relative;
+    }
+    .gold-rule::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 7px;
+      height: 7px;
+      border: 1px solid var(--gold);
+      background: var(--ivory);
+      transform: translate(-50%, -50%) rotate(45deg);
+    }
+    .catch {
+      margin: 4px 0 0;
+      font-family: "Noto Serif JP", serif;
+      font-size: clamp(16px, 2vw, 21px);
+      line-height: 1.85;
+      letter-spacing: 0.04em;
+    }
+    .sub {
+      margin: 12px 0 0;
+      font-size: 13px;
+      line-height: 1.9;
+      letter-spacing: 0.03em;
+      color: var(--ink-soft);
+      max-width: 42em;
+    }
+    .wide { width: min(1040px, 100%); }
+    .quotes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      width: min(920px, 100%);
+      margin-bottom: 16px;
+    }
+    .quote {
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 18px 20px;
+      font-family: "Noto Serif JP", serif;
+      font-size: clamp(16px, 2vw, 22px);
+      line-height: 1.6;
+    }
+    .cards {
+      display: grid;
+      gap: 12px;
+      width: min(1040px, 100%);
+      text-align: left;
+    }
+    .cards-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .cards-2 { grid-template-columns: 1fr 1fr; }
+    .cards-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+    .card {
+      background: #fff;
+      border: 1px solid var(--line);
+      padding: 16px 18px 18px;
+    }
+    .card b {
+      display: block;
+      font-family: "Noto Serif JP", serif;
+      font-weight: 500;
+      font-size: 14px;
+      margin-bottom: 8px;
+      letter-spacing: 0.04em;
+    }
+    .card p, .card li {
+      margin: 0;
+      font-size: 12.5px;
+      line-height: 1.75;
+      color: var(--ink-soft);
+    }
+    .card ul {
+      margin: 0;
+      padding-left: 1.1em;
+    }
+    .shots {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      width: min(1000px, 100%);
+    }
+    .shot {
+      background: #fff;
+      border: 1px solid var(--line);
+      overflow: hidden;
+      text-align: left;
+    }
+    .shot img {
+      display: block;
+      width: 100%;
+      height: 168px;
+      object-fit: cover;
+      object-position: top;
+    }
+    .shot p {
+      margin: 0;
+      padding: 8px 12px 10px;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: var(--ink-soft);
+    }
+    .flow {
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      width: min(1080px, 100%);
+      flex-wrap: wrap;
+    }
+    .flow-box {
+      flex: 1 1 120px;
+      background: #fff;
+      border: 1px solid var(--line);
+      padding: 16px 10px 18px;
+      min-width: 118px;
+    }
+    .flow-box strong {
+      display: block;
+      font-family: "Noto Serif JP", serif;
+      font-weight: 500;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    .flow-box span {
+      display: block;
+      font-size: 11px;
+      color: var(--ink-soft);
+      line-height: 1.55;
+    }
+    .num {
+      width: 26px;
+      height: 26px;
+      margin: 0 auto 8px;
+      border: 1px solid var(--gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+    }
+    .arrow {
+      display: flex;
+      align-items: center;
+      color: var(--gold);
+      font-size: 18px;
+      padding: 0 4px;
+    }
+    .now-next {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      width: min(920px, 100%);
+      margin-top: 14px;
+      text-align: left;
+    }
+    .now-next .card b { color: var(--gold); letter-spacing: 0.1em; font-size: 12px; }
+    .stages {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      width: min(1000px, 100%);
+      text-align: left;
+    }
+    .stage {
+      background: #fff;
+      border: 1px solid var(--line);
+      padding: 18px 18px 20px;
+    }
+    .stage b {
+      display: block;
+      font-family: "Noto Serif JP", serif;
+      font-weight: 500;
+      font-size: 13px;
+      margin-bottom: 8px;
+      color: var(--gold);
+      letter-spacing: 0.14em;
+    }
+    .stage p, .stage li {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.75;
+    }
+    .stage ol, .stage ul {
+      margin: 0;
+      padding-left: 1.15em;
+    }
+    .closer {
+      margin-top: 18px;
+      font-family: "Noto Serif JP", serif;
+      font-size: clamp(15px, 1.7vw, 19px);
+      line-height: 1.8;
+    }
+    .asset {
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--ink-soft);
+    }
+    .demo-line {
+      font-family: "Noto Serif JP", serif;
+      font-size: clamp(17px, 2.2vw, 26px);
+      line-height: 1.8;
+      letter-spacing: 0.05em;
+    }
+    .bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 24px 14px;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      color: var(--ink-soft);
+    }
+    .bar button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--navy);
+      padding: 6px 14px;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .bar button:hover { border-color: var(--gold); }
+    @media (max-width: 900px) {
+      .slide { padding: 24px 16px 64px; }
+      .quotes, .cards-3, .cards-4, .shots, .stages, .now-next { grid-template-columns: 1fr; }
+      .arrow { transform: rotate(90deg); width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="deck">
+    <section class="slide is-on">
+      <p class="kicker">ADS 卒業制作</p>
+      <img class="logo" src="logo.png?v=3" alt="M's Omotenashi Concierge">
+      <div class="gold-rule"></div>
+      <p class="catch">出版社の現場で培った目利きで選ぶ、<br>レストランとギフトのパーソナルガイド</p>
+      <p class="sub">頭の中の経験を、再利用できる知識にする。<br>口コミサイトではなく、M自身の選択眼を残すパーソナル・コンシェルジュ。<br>広告営業出身。エンジニアではない。実装は Cursor。主役は、何を知識として残すかという設計。</p>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">なぜ作ったか</p>
+      <h2>思い出すだけでなく、呼び出せる形に</h2>
+      <div class="gold-rule"></div>
+      <div class="quotes">
+        <p class="quote">「どこか良い店を知らない？」</p>
+        <p class="quote">「この人への手土産は何がいい？」</p>
+      </div>
+      <div class="cards cards-3">
+        <div class="card">
+          <b>よく相談されていた</b>
+          <p>会食・レストラン・手土産。判断基準は頭の中にあったが、その場で思い出すしかなかった。</p>
+        </div>
+        <div class="card">
+          <b>その都度たどっていた</b>
+          <p>メモや記憶を毎回たどる。接待、友人、犬連れ。場面に合う店を、条件で呼び出せなかった。</p>
+        </div>
+        <div class="card">
+          <b>データ化したかった</b>
+          <p>保存ではなく、あとから条件で呼び出せる知識へ。エリア／ジャンル／価格／フォーマル度／利用シーン／雰囲気／犬連れ。</p>
+        </div>
+      </div>
+      <p class="sub">グルメアプリが目的ではない。暗黙知を構造化し、条件で呼び出せるようにする。</p>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">作ったもの</p>
+      <h2>見る・探すは公開。直すのは自分用</h2>
+      <div class="gold-rule"></div>
+      <div class="shots">
+        <figure class="shot">
+          <img src="images/home/_verify-home.png" alt="トップ">
+          <p>公開｜トップ　ロゴ＋コピー＋Restaurant / Gift</p>
+        </figure>
+        <figure class="shot">
+          <img src="images/home/_verify-restaurants.png" alt="Restaurant">
+          <p>公開｜Restaurant　条件・フリーワード・音声</p>
+        </figure>
+        <figure class="shot">
+          <img src="images/about/_preview/about-visit-wishlist.png" alt="Visit Wishlist">
+          <p>公開｜Visit / Wishlist　店舗ステータス</p>
+        </figure>
+        <figure class="shot">
+          <img src="images/about/_preview/about-page-desktop.png" alt="About M">
+          <p>公開｜About M　誰が、どんな基準で選ぶか</p>
+        </figure>
+      </div>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">作ったもの｜設計</p>
+      <h2>役割を分けて、目利きを価値にした</h2>
+      <div class="gold-rule"></div>
+      <div class="cards cards-2 wide">
+        <div class="card">
+          <b>Visit / Wishlist と Choice</b>
+          <p>Visit＝実際に訪問。Wishlist＝行ってみたい。これは店舗のステータス。Choiceは特集で、ステータスではない。例：個室で接待、グラスでワイン、日持ちする手土産。</p>
+        </div>
+        <div class="card">
+          <b>About M</b>
+          <p>口コミの量では勝負しない。「誰が、どんな経験と基準で選ぶか」。出版社の広告営業で数多くの会食＋ワイン・贈答。「美味しいだけでなく、その場にちょうどいい」。</p>
+        </div>
+        <div class="card">
+          <b>入力を非公開アプリへ</b>
+          <p>当初は Google フォーム。いまは非公開の /edit から入力・修正。来客向けから登録・直すを外した。アプリで直しても、シートに残る。</p>
+        </div>
+        <div class="card">
+          <b>デザイン</b>
+          <p>見た目は AI（Cursor）で作った。かわいい案から、上質・知的・ニュートラルへ。アイボリー／ネイビー／控えめなゴールド。男性にも使う前提。店を探す AI API とは別。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">開発で工夫したこと</p>
+      <h2>経験を、検索できる項目にした</h2>
+      <div class="gold-rule"></div>
+      <div class="flow">
+        <div class="flow-box"><div class="num">1</div><strong>経験</strong><span>頭の中の相談と選定</span></div>
+        <div class="arrow">→</div>
+        <div class="flow-box"><div class="num">2</div><strong>構造化</strong><span>呼び出せる項目にする</span></div>
+        <div class="arrow">→</div>
+        <div class="flow-box"><div class="num">3</div><strong>登録・更新</strong><span>シートが正本。/edit</span></div>
+        <div class="arrow">→</div>
+        <div class="flow-box"><div class="num">4</div><strong>検索</strong><span>条件と単語</span></div>
+        <div class="arrow">→</div>
+        <div class="flow-box"><div class="num">5</div><strong>音声</strong><span>入力。AIは未接続</span></div>
+      </div>
+      <div class="now-next">
+        <div class="card">
+          <b>いま</b>
+          <p>条件・フリーワード・Web Speech の日本語音声。「恵比寿 和食」のような単語・条件はできる。文の意味理解は、まだしない。</p>
+        </div>
+        <div class="card">
+          <b>これから</b>
+          <p>「恵比寿で和食が食べたい」をAIが解釈 → 条件へ変換 → M自身の登録データから返す。世の中の店を聞かない。</p>
+        </div>
+      </div>
+      <p class="sub">AIを付けることから始めたのではない。先に、自分の経験を構造化した。</p>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">デモ</p>
+      <h2>ここから、実演します</h2>
+      <div class="gold-rule"></div>
+      <p class="demo-line">トップ　→　About M　→　Restaurant　→　音声検索　→　1店舗</p>
+      <p class="sub">Gift は操作しない。見た目のAIと、店を探すAIは分ける。</p>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">今後</p>
+      <h2>備忘録から、知識へ</h2>
+      <div class="gold-rule"></div>
+      <div class="stages">
+        <div class="stage">
+          <b>現在</b>
+          <p>条件検索・音声検索。無料で利用者とデータを増やす。予約・購入へ送客する土台。</p>
+        </div>
+        <div class="stage">
+          <b>次</b>
+          <ol>
+            <li>AI自然文検索・登録支援</li>
+            <li>M's Choice 特集</li>
+            <li>noteで読む → アプリで探す・比較 → 予約／EC</li>
+          </ol>
+        </div>
+        <div class="stage">
+          <b>将来</b>
+          <p>個別コンシェルジュ。法人の会食・贈答ナレッジ。「この相手ならこの店」「この場面ならこの手土産」。</p>
+        </div>
+      </div>
+      <p class="asset">資産はUIやコードではなく、経験・選定データ・蓄積された知識。</p>
+      <p class="closer">自分のための備忘録　→　シートとアプリ　→　暗黙知を再利用可能な知識へ</p>
+      <p class="asset">是非見ていただいて、お気づきの点やアイデアなどいただけましたら嬉しいです。<br>マコなり社長ともぜひコラボしたいです。よろしくお願いします。</p>
+    </section>
+  </div>
+
+  <div class="bar">
+    <button type="button" id="prev">戻る</button>
+    <span id="pos">1 / 7</span>
+    <button type="button" id="next">次へ</button>
+  </div>
+
+  <script>
+    const slides = [...document.querySelectorAll(".slide")];
+    let i = 0;
+    function show(n) {
+      i = Math.max(0, Math.min(slides.length - 1, n));
+      slides.forEach((s, idx) => s.classList.toggle("is-on", idx === i));
+      document.getElementById("pos").textContent = (i + 1) + " / " + slides.length;
+    }
+    document.getElementById("prev").onclick = () => show(i - 1);
+    document.getElementById("next").onclick = () => show(i + 1);
+    document.addEventListener("keydown", (e) => {
+      if (["ArrowRight", "PageDown", " ", "Enter"].includes(e.key)) { e.preventDefault(); show(i + 1); }
+      if (["ArrowLeft", "PageUp", "Backspace"].includes(e.key)) { e.preventDefault(); show(i - 1); }
+      if (e.key === "Home") show(0);
+      if (e.key === "End") show(slides.length - 1);
+    });
+  </script>
+</body>
+</html>
