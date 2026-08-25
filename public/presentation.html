@@ -165,6 +165,29 @@
       letter-spacing: 0.06em;
       color: var(--ink-soft);
     }
+    .shot-hero {
+      width: min(860px, 100%);
+      background: #fff;
+      border: 1px solid var(--line);
+      overflow: hidden;
+      text-align: left;
+    }
+    .shot-hero img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 58vh;
+      object-fit: contain;
+      object-position: top;
+      background: var(--paper);
+    }
+    .shot-hero p {
+      margin: 0;
+      padding: 10px 14px 12px;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      color: var(--ink-soft);
+    }
     .flow {
       display: flex;
       align-items: stretch;
@@ -313,24 +336,24 @@
       <h2>思い出すだけでなく、呼び出せる形に</h2>
       <div class="gold-rule"></div>
       <div class="quotes">
-        <p class="quote">「どこか良い店を知らない？」</p>
-        <p class="quote">「この人への手土産は何がいい？」</p>
+        <p class="quote">「喜んでもらえるかな」</p>
+        <p class="quote">「センスのいいひとだと思われたい」</p>
       </div>
       <div class="cards cards-3">
         <div class="card">
-          <b>よく相談されていた</b>
-          <p>会食・レストラン・手土産。判断基準は頭の中にあったが、その場で思い出すしかなかった。</p>
+          <b>会食の店選び</b>
+          <p>クライアントの会食。気の置けない代理店やベンダーとの大人数。「どこにする？」。苦手な食材がある人もいる。</p>
         </div>
         <div class="card">
-          <b>その都度たどっていた</b>
-          <p>メモや記憶を毎回たどる。接待、友人、犬連れ。場面に合う店を、条件で呼び出せなかった。</p>
+          <b>手土産</b>
+          <p>いつもワンパターンの菓子折り。センスを見せたい。</p>
         </div>
         <div class="card">
-          <b>データ化したかった</b>
-          <p>保存ではなく、あとから条件で呼び出せる知識へ。エリア／ジャンル／価格／フォーマル度／利用シーン／雰囲気／犬連れ。</p>
+          <b>お祝いの花</b>
+          <p>昇格のお祝いなど。センスの良いものにしたい。</p>
         </div>
       </div>
-      <p class="sub">グルメアプリが目的ではない。暗黙知を構造化し、条件で呼び出せるようにする。</p>
+      <p class="sub">お店選びも、ギフトの品選びも、その人を表す。<br>判断基準は頭の中にあった。でも、その場で思い出すしかなかった。</p>
     </section>
 
     <section class="slide">
@@ -351,10 +374,20 @@
           <p>公開｜Visit / Wishlist　店舗ステータス</p>
         </figure>
         <figure class="shot">
-          <img src="images/about/_preview/about-page-desktop.png" alt="About M">
-          <p>公開｜About M　誰が、どんな基準で選ぶか</p>
+          <img src="images/edit/_verify-edit.png" alt="edit">
+          <p>入力｜非公開 /edit　Googleフォームから移した</p>
         </figure>
       </div>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">作ったもの｜About M</p>
+      <h2>誰が、どんな基準で選ぶか</h2>
+      <div class="gold-rule"></div>
+      <figure class="shot-hero">
+        <img src="images/about/_preview/about-page-desktop.png" alt="About M ページ">
+        <p>公開｜About M　会食・ワイン・贈答。「美味しいだけでなく、その場にちょうどいい」</p>
+      </figure>
     </section>
 
     <section class="slide">
@@ -447,7 +480,7 @@
 
   <div class="bar">
     <button type="button" id="prev">戻る</button>
-    <span id="pos">1 / 7</span>
+    <span id="pos">1 / 8</span>
     <button type="button" id="next">次へ</button>
   </div>
 
