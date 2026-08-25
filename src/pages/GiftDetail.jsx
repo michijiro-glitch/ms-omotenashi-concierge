@@ -1,6 +1,7 @@
 import { Link, Navigate, useLocation, useParams } from "react-router-dom";
 import Facts from "../components/Facts.jsx";
 import PageMeta from "../components/PageMeta.jsx";
+import PhotoGallery from "../components/PhotoGallery.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
 import { useData } from "../data/DataProvider.jsx";
 import { clipMeta, DESCRIPTIONS, fullTitle } from "../lib/pageMeta.js";
@@ -50,25 +51,7 @@ export default function GiftDetail() {
         ← 一覧に戻る
       </Link>
 
-      <div className="hero">
-        {photos[0] ? (
-          <img src={photos[0]} alt={gift.name} />
-        ) : (
-          <div className="hero-placeholder">
-            <span>{gift.brand}</span>
-          </div>
-        )}
-      </div>
-
-      {photos.length > 1 ? (
-        <ul className="photo-thumbs">
-          {photos.slice(1).map((src, index) => (
-            <li key={src}>
-              <img src={src} alt={`${gift.name}の写真${index + 2}`} />
-            </li>
-          ))}
-        </ul>
-      ) : null}
+      <PhotoGallery key={gift.id} photos={photos} alt={gift.name} placeholder={gift.brand} />
 
       <p className="eyebrow">手土産・お取り寄せ</p>
       <h1 className="detail-name">{gift.name}</h1>

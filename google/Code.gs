@@ -5,6 +5,7 @@
 var SPREADSHEET_ID = "1sJucCTSK8oxWaS2U2JymEGOAVcf7Dv8DUmK8GkV68-g";
 var RESTAURANT_FORM_ID = "1rJtytnT-ae7xADcK1YAmvYD9UT3CmpIFZRJF-bZotiM";
 var GIFT_FORM_ID = "1sNEqXBwg-rqq5gJW3ixIYbs2eX3MD1dYltG0ksXqzuA";
+var GIFT_CATEGORIES = ["菓子", "総菜", "食材", "酒", "花", "その他"];
 
 function importSeedData() {
   var restaurantSheet = findSheetByGid_(89270631);
@@ -43,6 +44,19 @@ function resetGiftForm() {
   writeSettings_(ss, log);
 }
 
+function updateGiftCategoryChoices() {
+  var form = FormApp.openById(GIFT_FORM_ID);
+  var items = form.getItems();
+  var i;
+  for (i = 0; i < items.length; i++) {
+    if (items[i].getTitle() === "カテゴリ" && items[i].getType() === FormApp.ItemType.LIST) {
+      items[i].asListItem().setChoiceValues(GIFT_CATEGORIES);
+      return;
+    }
+  }
+  throw new Error("カテゴリのプルダウンが見つかりません。");
+}
+
 function resetRestaurantForm() {
   var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   var log = ensureSettings_(ss);
@@ -62,6 +76,7 @@ function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu("Omotenashi")
     .addItem("手土産フォームを整える", "resetGiftForm")
+    .addItem("手土産カテゴリを更新", "updateGiftCategoryChoices")
     .addItem("レストランフォームを整える", "resetRestaurantForm")
     .addItem("準備（写真の自動変換）", "setupOnce")
     .addItem("写真URLをすべて更新", "processAllRows")
@@ -313,7 +328,7 @@ function fillGiftForm_(form) {
   form.setCollectEmail(false);
   form.addTextItem().setTitle("商品名").setRequired(true);
   form.addTextItem().setTitle("店名・ブランド");
-  form.addListItem().setTitle("カテゴリ").setChoiceValues(["高級", "菓子", "酒", "その他"]);
+  form.addListItem().setTitle("カテゴリ").setChoiceValues(GIFT_CATEGORIES);
   form.addListItem().setTitle("価格帯").setChoiceValues([
     "〜3,000円", "3,000〜5,000円", "5,000〜8,000円", "8,000〜12,000円", "12,000〜20,000円", "20,000円〜",
   ]);
@@ -840,7 +855,7 @@ var SEED_GIFTS_ = [
     id: "awabi-steak-wako",
     name: "アワビのステーキ",
     brand: "和光",
-    category: "高級",
+    category: "総菜",
     priceRange: "8,000〜12,000円",
     recipients: ["取引先"],
     keeping: "60日 / 常温",
@@ -853,7 +868,7 @@ var SEED_GIFTS_ = [
     id: "hasu-mochi-wakuden",
     name: "蓮もち・和煮詰め合わせ",
     brand: "和久傳",
-    category: "高級",
+    category: "菓子",
     priceRange: "5,000〜8,000円",
     recipients: ["取引先"],
     keeping: "3か月 / 常温",

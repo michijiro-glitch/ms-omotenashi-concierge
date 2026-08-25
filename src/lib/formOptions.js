@@ -25,9 +25,15 @@ export const FORMALITY = ["フォーマル", "きちんと", "上質カジュア
 export const SCENES = ["重要な接待", "仕事の会食", "友人", "家族", "デート", "一人", "ランチ", "二次会", "記念日"];
 export const MOODS = ["静か", "落ち着いている", "活気あり", "眺望が良い", "隠れ家", "個室あり", "カウンター", "テラス"];
 export const DOG_POLICIES = ["可", "不可", "テラス席のみ可", "要確認"];
-export const GIFT_CATEGORIES = ["高級", "菓子", "酒", "その他"];
+export const GIFT_CATEGORIES = ["菓子", "総菜", "食材", "酒", "花", "その他"];
 export const GIFT_RECIPIENTS = ["取引先", "友人", "家族", "自分用"];
 export const RATINGS = ["1", "2", "3", "4", "5"];
+
+export function normalizeGiftCategory(value) {
+  const text = String(value || "").trim();
+  if (text === "高級") return "その他";
+  return text;
+}
 
 export function toDateInput(value) {
   const text = String(value || "").trim();

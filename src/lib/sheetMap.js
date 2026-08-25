@@ -1,4 +1,5 @@
 import { cell, photoList, splitList, toNumberOrNull } from "./csv.js";
+import { normalizeGiftCategory } from "./formOptions.js";
 
 export function rowToRestaurant(record, index) {
   const name = cell(record, "店名");
@@ -41,7 +42,7 @@ export function rowToGift(record, index) {
     id: cell(record, "id") || name,
     name,
     brand: cell(record, "店名・ブランド", "店名・"),
-    category: cell(record, "カテゴリ"),
+    category: normalizeGiftCategory(cell(record, "カテゴリ")),
     priceRange: cell(record, "価格帯"),
     recipients: splitList(cell(record, "向いている相手・用途")),
     keeping: cell(record, "日持ち・保存"),

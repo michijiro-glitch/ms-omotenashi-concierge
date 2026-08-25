@@ -1,6 +1,7 @@
 import { Link, Navigate, useLocation, useParams } from "react-router-dom";
 import Facts from "../components/Facts.jsx";
 import PageMeta from "../components/PageMeta.jsx";
+import PhotoGallery from "../components/PhotoGallery.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
 import { useData } from "../data/DataProvider.jsx";
 import { statusLabel } from "../lib/formOptions.js";
@@ -73,25 +74,7 @@ export default function RestaurantDetail() {
         ← 一覧に戻る
       </Link>
 
-      <div className="hero">
-        {photos[0] ? (
-          <img src={photos[0]} alt={restaurant.name} />
-        ) : (
-          <div className="hero-placeholder">
-            <span>{area}</span>
-          </div>
-        )}
-      </div>
-
-      {photos.length > 1 ? (
-        <ul className="photo-thumbs">
-          {photos.slice(1).map((src, index) => (
-            <li key={src}>
-              <img src={src} alt={`${restaurant.name}の写真${index + 2}`} />
-            </li>
-          ))}
-        </ul>
-      ) : null}
+      <PhotoGallery key={restaurant.id} photos={photos} alt={restaurant.name} placeholder={area} />
 
       <p className="eyebrow">{status}</p>
       <h1 className="detail-name">{restaurant.name}</h1>

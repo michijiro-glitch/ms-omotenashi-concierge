@@ -10,10 +10,10 @@ import PageMeta from "../components/PageMeta.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
 import { useData } from "../data/DataProvider.jsx";
 import { DESCRIPTIONS, fullTitle } from "../lib/pageMeta.js";
-import { GIFT_RECIPIENTS } from "../lib/formOptions.js";
+import { GIFT_CATEGORIES, GIFT_RECIPIENTS } from "../lib/formOptions.js";
 import { matchesGift } from "../lib/gifts.js";
 import { sortPriceRanges, uniqueValues } from "../lib/restaurants.js";
-import { STORAGE_METHODS, storageMethod } from "../lib/search.js";
+import { parseGiftQuery, STORAGE_METHODS, storageMethod } from "../lib/search.js";
 import { clearParams, getList, getParam, hasParams, setParam, toggleList } from "../lib/urlState.js";
 
 const FILTER_KEYS = ["q", "category", "recipients", "recipient", "price", "storage"];
@@ -32,10 +32,6 @@ export default function GiftList() {
   const update = (key, value) => setParam(searchParams, setSearchParams, key, value);
   const toggle = (key, value) => toggleList(searchParams, setSearchParams, key, value);
 
-  const categories = useMemo(
-    () => uniqueValues(gifts, (item) => item.category).sort((a, b) => a.localeCompare(b, "ja")),
-    [gifts],
-  );
   const priceRanges = useMemo(
     () => sortPriceRanges(uniqueValues(gifts, (item) => item.priceRange)),
     [gifts],
@@ -44,6 +40,11 @@ export default function GiftList() {
     const found = uniqueValues(gifts, (item) => storageMethod(item.keeping));
     return STORAGE_METHODS.filter((method) => found.includes(method));
   }, [gifts]);
+  const catalogs = useMemo(
+    () => ({ categories: GIFT_CATEGORIES, priceRanges, storages, recipients: GIFT_RECIPIENTS }),
+    [priceRanges, storages],
+  );
+  const parsedQuery = useMemo(() => parseGiftQuery(query, catalogs), [query, catalogs]);
 
   const filtered = gifts.filter((gift) =>
     matchesGift(gift, {
@@ -52,6 +53,8 @@ export default function GiftList() {
       priceRange,
       storage,
       query,
+      catalogs,
+      parsed: parsedQuery,
     }),
   );
 
@@ -74,7 +77,7 @@ export default function GiftList() {
             value={category}
             onChange={(value) => update("category", value)}
             allLabel="カテゴリ：すべて"
-            options={categories}
+            options={GIFT_CATEGORIES}
           />
           <FilterSelect
             label="価格帯"

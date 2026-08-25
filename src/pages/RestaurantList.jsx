@@ -12,6 +12,7 @@ import { useData } from "../data/DataProvider.jsx";
 import { DESCRIPTIONS, fullTitle } from "../lib/pageMeta.js";
 import { DOG_POLICIES, FORMALITY, MOODS, SCENES, STATUSES, statusLabel } from "../lib/formOptions.js";
 import { areaLabel, matchesRestaurant, sortPriceRanges, uniqueValues } from "../lib/restaurants.js";
+import { parseRestaurantQuery } from "../lib/search.js";
 import { clearParams, getList, getParam, hasParams, setParam, toggleList } from "../lib/urlState.js";
 
 const FILTER_KEYS = ["q", "area", "genre", "price", "status", "formality", "dog", "scenes", "moods"];
@@ -44,6 +45,8 @@ export default function RestaurantList() {
     () => sortPriceRanges(uniqueValues(restaurants, (item) => item.priceRange)),
     [restaurants],
   );
+  const catalogs = useMemo(() => ({ areas, genres, priceRanges }), [areas, genres, priceRanges]);
+  const parsedQuery = useMemo(() => parseRestaurantQuery(query, catalogs), [query, catalogs]);
 
   const filtered = restaurants.filter((restaurant) =>
     matchesRestaurant(restaurant, {
@@ -56,6 +59,8 @@ export default function RestaurantList() {
       scenes,
       moods,
       query,
+      catalogs,
+      parsed: parsedQuery,
     }),
   );
 

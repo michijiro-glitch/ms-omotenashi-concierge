@@ -1,4 +1,4 @@
-import { matchesAny, matchesQuery } from "./search.js";
+import { everyValue, matchesAll, matchesAny, matchesQuery, parseRestaurantQuery } from "./search.js";
 
 export function areaLabel(restaurant) {
   return restaurant.tokyoArea || restaurant.otherArea || restaurant.region;
@@ -54,15 +54,18 @@ export function sortPriceRanges(ranges) {
 }
 
 export function matchesRestaurant(restaurant, filters) {
-  const { area, genre, priceRange, status, formality, dogPolicy, scenes, moods, query } = filters;
-  if (area && areaLabel(restaurant) !== area) return false;
-  if (genre && restaurant.genre !== genre) return false;
-  if (priceRange && restaurant.priceRange !== priceRange) return false;
-  if (status && restaurant.status !== status) return false;
-  if (formality && restaurant.formality !== formality) return false;
-  if (dogPolicy && restaurant.dogPolicy !== dogPolicy) return false;
+  const { area, genre, priceRange, status, formality, dogPolicy, scenes, moods, query, catalogs } = filters;
+  const parsed = filters.parsed || parseRestaurantQuery(query, catalogs);
+  if (!everyValue(areaLabel(restaurant), area, parsed.area)) return false;
+  if (!everyValue(restaurant.genre, genre, parsed.genre)) return false;
+  if (!everyValue(restaurant.priceRange, priceRange, parsed.priceRange)) return false;
+  if (!everyValue(restaurant.status, status, parsed.status)) return false;
+  if (!everyValue(restaurant.formality, formality, parsed.formality)) return false;
+  if (!everyValue(restaurant.dogPolicy, dogPolicy, parsed.dogPolicy)) return false;
   if (!matchesAny(restaurant.scenes || [], scenes || [])) return false;
+  if (!matchesAll(restaurant.scenes || [], parsed.scenes || [])) return false;
   if (!matchesAny(restaurant.moods || [], moods || [])) return false;
+  if (!matchesAll(restaurant.moods || [], parsed.moods || [])) return false;
 
   return matchesQuery(
     [
@@ -78,7 +81,7 @@ export function matchesRestaurant(restaurant, filters) {
       ...(restaurant.scenes || []),
       ...(restaurant.moods || []),
     ],
-    query,
+    parsed.restQuery,
   );
 }
 
