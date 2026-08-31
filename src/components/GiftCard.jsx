@@ -10,7 +10,7 @@ function Stars({ value }) {
   );
 }
 
-export default function GiftCard({ gift, to }) {
+export default function GiftCard({ gift, to, nameTag: NameTag = "h2" }) {
   const location = useLocation();
   const photo = firstGiftPhoto(gift);
 
@@ -27,7 +27,7 @@ export default function GiftCard({ gift, to }) {
       </div>
 
       <div className="card-body">
-        <h2 className="card-name">{gift.name}</h2>
+        <NameTag className="card-name">{gift.name}</NameTag>
         <p className="card-meta">
           {gift.brand}
           <span className="dot">·</span>

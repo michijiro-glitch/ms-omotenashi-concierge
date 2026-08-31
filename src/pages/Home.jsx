@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import HomeChoiceSection from "../components/HomeChoiceSection.jsx";
 import PageMeta from "../components/PageMeta.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
 import { DESCRIPTIONS, SITE_NAME } from "../lib/pageMeta.js";
@@ -118,6 +119,8 @@ export default function Home() {
           <LeafAccent />
         </Link>
       </nav>
+
+      <HomeChoiceSection />
 
       <section className="home-about" aria-labelledby="home-about-heading">
         <GoldRule />

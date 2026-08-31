@@ -11,7 +11,7 @@ function Stars({ value }) {
   );
 }
 
-export default function RestaurantCard({ restaurant, to }) {
+export default function RestaurantCard({ restaurant, to, nameTag: NameTag = "h2" }) {
   const location = useLocation();
   const visited = restaurant.status === "行ったことがある";
   const photo = firstPhoto(restaurant);
@@ -35,7 +35,7 @@ export default function RestaurantCard({ restaurant, to }) {
       </div>
 
       <div className="card-body">
-        <h2 className="card-name">{restaurant.name}</h2>
+        <NameTag className="card-name">{restaurant.name}</NameTag>
         <p className="card-meta">
           {area}
           <span className="dot">·</span>

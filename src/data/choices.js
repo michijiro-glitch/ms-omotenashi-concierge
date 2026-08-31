@@ -1,0 +1,61 @@
+export const CHOICES = [
+  {
+    slug: "jimbocho-gourmet",
+    active: true,
+    order: 1,
+    kind: "restaurant",
+    titleEn: "Jimbocho Gourmet Guide",
+    titleJa: "神保町グルメ特集",
+    kickerJa: "神保町で楽しむグルメ",
+    bilingual: true,
+    englishAvailable: true,
+    introJa:
+      "本と古書店、喫茶、昔ながらの店が続く神保町で、私が実際に通ってよかった店を集めました。ランキングではなく、会食や仕事の合間に選んできた店です。",
+    introEn:
+      "Discover dining spots selected by M in Jimbocho, Tokyo's neighborhood of books, coffee and classic dining.",
+    description:
+      "神保町でMが通ってよかった店の特集。本と喫茶の街で選んだグルメガイドです。Jimbocho gourmet spots selected by M.",
+    picks: [
+      { type: "restaurant", id: "front-du-chaton", order: 1, categoryJa: "", categoryEn: "", commentJa: "", commentEn: "" },
+      { type: "restaurant", id: "浅井商店", order: 2, categoryJa: "", categoryEn: "", commentJa: "", commentEn: "" },
+      { type: "restaurant", id: "gond", order: 3, categoryJa: "", categoryEn: "", commentJa: "", commentEn: "" },
+    ],
+  },
+  {
+    slug: "dog-friendly",
+    active: true,
+    order: 2,
+    kind: "restaurant",
+    titleEn: "Dog-Friendly Dining",
+    titleJa: "犬と行けるレストラン特集",
+    kickerJa: "",
+    bilingual: false,
+    englishAvailable: false,
+    introJa: "犬と一緒に食事ができる店のなかから、Mが選んだレストランの特集です。条件に合う店をすべて出すのではなく、テーマとして編んでいます。",
+    introEn: "",
+    description: "犬と行けるレストランのなかから、Mが選んだ店の特集です。",
+    picks: [
+      { type: "restaurant", id: "comptoir-occitan", order: 1, categoryJa: "", categoryEn: "", commentJa: "", commentEn: "" },
+      { type: "restaurant", id: "hashi-an", order: 2, categoryJa: "", categoryEn: "", commentJa: "", commentEn: "" },
+      { type: "restaurant", id: "五右衛門茶屋", order: 3, categoryJa: "", categoryEn: "", commentJa: "", commentEn: "" },
+    ],
+  },
+  {
+    slug: "gifts-that-keep",
+    active: true,
+    order: 3,
+    kind: "gift",
+    titleEn: "Gifts That Keep",
+    titleJa: "日持ちする手土産特集",
+    kickerJa: "",
+    bilingual: false,
+    englishAvailable: false,
+    introJa: "日持ちする手土産のなかから、Mが選んだ品の特集です。保存や価格、贈る相手は、既存のギフトデータから参照します。",
+    introEn: "",
+    description: "日持ちする手土産のなかから、Mが選んだ品の特集です。",
+    picks: [
+      { type: "gift", id: "hasu-mochi-wakuden", order: 1, categoryJa: "", categoryEn: "", commentJa: "", commentEn: "" },
+      { type: "gift", id: "awabi-steak-wako", order: 2, categoryJa: "", categoryEn: "", commentJa: "", commentEn: "" },
+    ],
+  },
+];
