@@ -4,6 +4,7 @@ import GiftEdit from "./pages/GiftEdit.jsx";
 import GiftList from "./pages/GiftList.jsx";
 import About from "./pages/About.jsx";
 import ChoiceDetail from "./pages/ChoiceDetail.jsx";
+import ChoiceEdit from "./pages/ChoiceEdit.jsx";
 import ChoiceList from "./pages/ChoiceList.jsx";
 import EditHub from "./pages/EditHub.jsx";
 import Home from "./pages/Home.jsx";
@@ -24,6 +25,7 @@ export default function App() {
       <Route path="/choice" element={<ChoiceList />} />
       <Route path="/choice/:slug" element={<ChoiceDetail />} />
       <Route path="/edit" element={<EditHub />} />
+      <Route path="/edit/choices" element={<ChoiceEdit />} />
       <Route path="/edit/restaurants/new" element={<RestaurantEdit />} />
       <Route path="/edit/restaurants/:id" element={<RestaurantEdit />} />
       <Route path="/edit/gifts/new" element={<GiftEdit />} />

@@ -14,8 +14,8 @@ function defaultItemsLabel(choice) {
 
 export default function ChoiceDetail() {
   const { slug } = useParams();
-  const { restaurants, gifts, loading } = useData();
-  const choice = getChoiceBySlug(slug);
+  const { restaurants, gifts, choices, loading } = useData();
+  const choice = getChoiceBySlug(slug, choices);
 
   if (!choice) {
     return <Navigate to="/choice" replace />;
@@ -24,7 +24,7 @@ export default function ChoiceDetail() {
   const configuredPicks = choice.picks || [];
   const picks = resolvePicks(choice, restaurants, gifts);
   const groups = groupPicksByCategory(picks);
-  const heading = choice.bilingual ? choice.titleEn : choice.titleJa;
+  const heading = choice.titleJa;
   const hasCategories = groups.some((group) => group.categoryJa);
 
   return (
@@ -37,8 +37,8 @@ export default function ChoiceDetail() {
         </Link>
         <p className="eyebrow">M's Choice</p>
         <h1 className="ms-choice-title">{heading}</h1>
-        {choice.bilingual && choice.kickerJa ? <p className="ms-choice-kicker">{choice.kickerJa}</p> : null}
-        {!choice.bilingual && choice.titleEn ? <p className="ms-choice-title-en">{choice.titleEn}</p> : null}
+        {choice.titleEn ? <p className="ms-choice-title-en">{choice.titleEn}</p> : null}
+        {choice.kickerJa ? <p className="ms-choice-kicker">{choice.kickerJa}</p> : null}
       </header>
 
       {choice.introJa ? (

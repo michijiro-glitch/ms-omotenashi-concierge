@@ -794,6 +794,82 @@ h2,
   margin-top: 12px;
 }
 
+.choice-edit-list {
+  display: grid;
+  gap: 28px;
+  margin-top: 24px;
+}
+
+.choice-edit-block {
+  padding: 22px 0 8px;
+  border-top: 1px solid var(--line);
+}
+
+.choice-edit-block h2 {
+  margin: 0;
+  font-size: clamp(20px, 2.4vw, 26px);
+}
+
+.choice-edit-kicker {
+  margin: 4px 0 16px;
+  color: var(--ink-soft);
+  font-family: "Cormorant Garamond", "Noto Serif JP", serif;
+  letter-spacing: 0.04em;
+}
+
+.choice-edit-picks {
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.choice-edit-picks li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--card);
+  border: 1px solid var(--line);
+}
+
+.choice-edit-remove {
+  flex: none;
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.choice-edit-remove:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.choice-edit-add {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.choice-edit-add select {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+  padding: 12px 14px;
+  border-radius: 2px;
+}
+
 .edit-hub-existing {
   margin-top: 36px;
   padding-top: 24px;

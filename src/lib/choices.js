@@ -8,6 +8,15 @@ export function getChoiceBySlug(slug, choices = CHOICES) {
   return choices.find((choice) => choice.slug === slug) || null;
 }
 
+export function withChoicePicks(choices, picksBySlug) {
+  if (!picksBySlug) return choices;
+  return choices.map((choice) => {
+    if (!Object.prototype.hasOwnProperty.call(picksBySlug, choice.slug)) return choice;
+    const picks = Array.isArray(picksBySlug[choice.slug]) ? picksBySlug[choice.slug] : [];
+    return { ...choice, picks };
+  });
+}
+
 export function resolvePicks(choice, restaurants, gifts) {
   if (!choice) return [];
   const restaurantsById = new Map(restaurants.map((item) => [item.id, item]));

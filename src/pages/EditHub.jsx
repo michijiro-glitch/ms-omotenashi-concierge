@@ -33,6 +33,11 @@ export default function EditHub() {
                 <h2>手土産を追加</h2>
                 <span className="choice-note">贈り物を新規登録する</span>
               </Link>
+              <Link className="choice-card" to="/edit/choices">
+                <span className="choice-kicker">M's Choice</span>
+                <h2>特集の掲載を直す</h2>
+                <span className="choice-note">店やギフトを追加・外す</span>
+              </Link>
             </nav>
             {loading ? (
               <p className="empty">読み込み中…</p>

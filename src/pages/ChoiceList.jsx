@@ -2,11 +2,13 @@ import { Link } from "react-router-dom";
 import ChoiceCard from "../components/ChoiceCard.jsx";
 import PageMeta from "../components/PageMeta.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
+import { useData } from "../data/DataProvider.jsx";
 import { getActiveChoices } from "../lib/choices.js";
 import { DESCRIPTIONS, fullTitle } from "../lib/pageMeta.js";
 
 export default function ChoiceList() {
-  const choices = getActiveChoices();
+  const { choices } = useData();
+  const published = getActiveChoices(choices);
 
   return (
     <div className="page ms-choice-page">
@@ -21,7 +23,7 @@ export default function ChoiceList() {
       </header>
 
       <div className="ms-choice-grid">
-        {choices.map((choice) => (
+        {published.map((choice) => (
           <ChoiceCard key={choice.slug} choice={choice} />
         ))}
       </div>

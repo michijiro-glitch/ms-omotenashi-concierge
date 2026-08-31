@@ -5,16 +5,16 @@ export const CHOICES = [
     order: 1,
     kind: "restaurant",
     titleEn: "Jimbocho Gourmet Guide",
-    titleJa: "神保町グルメ特集",
+    titleJa: "神保町グルメガイド",
     kickerJa: "神保町で楽しむグルメ",
     bilingual: true,
     englishAvailable: true,
     introJa:
-      "本と古書店、喫茶、昔ながらの店が続く神保町で、私が実際に通ってよかった店を集めました。ランキングではなく、会食や仕事の合間に選んできた店です。",
+      "本の街、神保町。2025年Time Out「World’s Coolest Neighbourhoods」で神保町が世界一クールな街に選ばれました。昔ながらのカレー店、中華料理に加え、新しいお店も増えています。仕事の合間に通ったランチの美味しい店を中心にご紹介します。",
     introEn:
-      "Discover dining spots selected by M in Jimbocho, Tokyo's neighborhood of books, coffee and classic dining.",
+      "Jimbocho is Tokyo’s neighborhood of books, classic cafés and local food. In 2025, Time Out named it the world’s coolest neighborhood. Alongside long-established curry shops and Chinese restaurants, new places continue to appear. This guide introduces some of M’s favorite lunch spots in Jimbocho.",
     description:
-      "神保町でMが通ってよかった店の特集。本と喫茶の街で選んだグルメガイドです。Jimbocho gourmet spots selected by M.",
+      "本の街、神保町。Time Out 2025で世界一クールな街に選ばれた神保町の、ランチを中心としたグルメガイドです。",
     picks: [
       { type: "restaurant", id: "front-du-chaton", order: 1, categoryJa: "", categoryEn: "", commentJa: "", commentEn: "" },
       { type: "restaurant", id: "浅井商店", order: 2, categoryJa: "", categoryEn: "", commentJa: "", commentEn: "" },

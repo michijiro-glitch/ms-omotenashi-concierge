@@ -1,5 +1,6 @@
 import { parseCsv } from "./csv.js";
 import { mapGifts, mapRestaurants } from "./sheetMap.js";
+import { loadChoicePicks } from "./sheetWrite.js";
 
 async function fetchCsv(url) {
   const joiner = url.includes("?") ? "&" : "?";
@@ -27,3 +28,5 @@ export function loadRestaurants(fallback) {
 export function loadGifts(fallback) {
   return loadSheet(import.meta.env.VITE_GIFTS_CSV_URL, mapGifts, fallback);
 }
+
+export { loadChoicePicks };

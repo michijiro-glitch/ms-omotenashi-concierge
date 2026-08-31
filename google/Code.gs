@@ -371,11 +371,91 @@ function setEditTokenFromEditor() {
   PropertiesService.getScriptProperties().setProperty("EDIT_TOKEN", token);
 }
 
+var DEFAULT_CHOICE_PICKS_ = {
+  "jimbocho-gourmet": [
+    { type: "restaurant", id: "front-du-chaton", order: 1, categoryJa: "", categoryEn: "", commentJa: "", commentEn: "" },
+    { type: "restaurant", id: "浅井商店", order: 2, categoryJa: "", categoryEn: "", commentJa: "", commentEn: "" },
+    { type: "restaurant", id: "gond", order: 3, categoryJa: "", categoryEn: "", commentJa: "", commentEn: "" },
+  ],
+  "dog-friendly": [
+    { type: "restaurant", id: "comptoir-occitan", order: 1, categoryJa: "", categoryEn: "", commentJa: "", commentEn: "" },
+    { type: "restaurant", id: "hashi-an", order: 2, categoryJa: "", categoryEn: "", commentJa: "", commentEn: "" },
+    { type: "restaurant", id: "五右衛門茶屋", order: 3, categoryJa: "", categoryEn: "", commentJa: "", commentEn: "" },
+  ],
+  "gifts-that-keep": [
+    { type: "gift", id: "hasu-mochi-wakuden", order: 1, categoryJa: "", categoryEn: "", commentJa: "", commentEn: "" },
+    { type: "gift", id: "awabi-steak-wako", order: 2, categoryJa: "", categoryEn: "", commentJa: "", commentEn: "" },
+  ],
+};
+
+function getChoicePicks_() {
+  var raw = PropertiesService.getScriptProperties().getProperty("CHOICE_PICKS");
+  if (!raw) {
+    PropertiesService.getScriptProperties().setProperty("CHOICE_PICKS", JSON.stringify(DEFAULT_CHOICE_PICKS_));
+    return DEFAULT_CHOICE_PICKS_;
+  }
+  try {
+    var parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") return DEFAULT_CHOICE_PICKS_;
+    return parsed;
+  } catch (error) {
+    return DEFAULT_CHOICE_PICKS_;
+  }
+}
+
+function saveChoicePicks_(picksBySlug) {
+  PropertiesService.getScriptProperties().setProperty("CHOICE_PICKS", JSON.stringify(picksBySlug));
+  return picksBySlug;
+}
+
+function addChoicePick_(slug, type, id) {
+  var picksBySlug = getChoicePicks_();
+  var list = picksBySlug[slug] ? picksBySlug[slug].slice() : [];
+  var i;
+  for (i = 0; i < list.length; i++) {
+    if (String(list[i].id) === String(id)) {
+      return picksBySlug;
+    }
+  }
+  var maxOrder = 0;
+  for (i = 0; i < list.length; i++) {
+    if (Number(list[i].order) > maxOrder) maxOrder = Number(list[i].order);
+  }
+  list.push({
+    type: type === "gift" ? "gift" : "restaurant",
+    id: String(id),
+    order: maxOrder + 1,
+    categoryJa: "",
+    categoryEn: "",
+    commentJa: "",
+    commentEn: "",
+  });
+  picksBySlug[slug] = list;
+  return saveChoicePicks_(picksBySlug);
+}
+
+function removeChoicePick_(slug, id) {
+  var picksBySlug = getChoicePicks_();
+  var list = (picksBySlug[slug] || []).filter(function (pick) {
+    return String(pick.id) !== String(id);
+  });
+  var i;
+  for (i = 0; i < list.length; i++) {
+    list[i].order = i + 1;
+  }
+  picksBySlug[slug] = list;
+  return saveChoicePicks_(picksBySlug);
+}
+
 function doPost(e) {
   return jsonOutput_(handleEditRequest_(e && e.postData ? e.postData.contents : ""));
 }
 
-function doGet() {
+function doGet(e) {
+  var action = e && e.parameter ? String(e.parameter.action || "") : "";
+  if (action === "choices") {
+    return jsonOutput_({ ok: true, picks: getChoicePicks_() });
+  }
   return jsonOutput_({ ok: true, service: "omotenashi-edit" });
 }
 
@@ -395,8 +475,22 @@ function handleEditRequest_(raw) {
     return { ok: false, error: "合言葉が違います。" };
   }
 
+  var action = String(body.action || "");
+  if (action === "addChoicePick") {
+    if (!body.slug || !body.id) {
+      return { ok: false, error: "特集と掲載先を選んでください。" };
+    }
+    return { ok: true, picks: addChoicePick_(String(body.slug), body.type, body.id) };
+  }
+  if (action === "removeChoicePick") {
+    if (!body.slug || !body.id) {
+      return { ok: false, error: "外す掲載が見つかりません。" };
+    }
+    return { ok: true, picks: removeChoicePick_(String(body.slug), body.id) };
+  }
+
   var kind = body.kind === "gift" ? "gift" : "restaurant";
-  if (String(body.action || "") === "create") {
+  if (action === "create") {
     var created = createItem_(kind, body.fields || {}, body.photos);
     if (!created) {
       return { ok: false, error: "追加できませんでした。店名または商品名を入れてください。" };

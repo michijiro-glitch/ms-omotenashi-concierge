@@ -1,7 +1,9 @@
-import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { CHOICES } from "./choices.js";
 import localGifts from "../data/gifts.json";
 import localRestaurants from "../data/restaurants.json";
-import { loadGifts, loadRestaurants } from "../lib/loadData.js";
+import { withChoicePicks } from "../lib/choices.js";
+import { loadChoicePicks, loadGifts, loadRestaurants } from "../lib/loadData.js";
 
 const DataContext = createContext(null);
 const HAS_RESTAURANT_CSV = Boolean(import.meta.env.VITE_RESTAURANTS_CSV_URL);
@@ -10,6 +12,7 @@ const HAS_GIFT_CSV = Boolean(import.meta.env.VITE_GIFTS_CSV_URL);
 export function DataProvider({ children }) {
   const [restaurants, setRestaurants] = useState(HAS_RESTAURANT_CSV ? [] : localRestaurants);
   const [gifts, setGifts] = useState(HAS_GIFT_CSV ? [] : localGifts);
+  const [picksBySlug, setPicksBySlug] = useState(null);
   const [loading, setLoading] = useState(true);
   const [restaurantError, setRestaurantError] = useState(false);
   const [giftError, setGiftError] = useState(false);
@@ -17,9 +20,10 @@ export function DataProvider({ children }) {
 
   const reload = useCallback(async () => {
     setLoading(true);
-    const [restaurantResult, giftResult] = await Promise.all([
+    const [restaurantResult, giftResult, choiceResult] = await Promise.all([
       loadRestaurants(localRestaurants),
       loadGifts(localGifts),
+      loadChoicePicks(),
     ]);
     if (!mounted.current) return;
 
@@ -37,6 +41,10 @@ export function DataProvider({ children }) {
       setGiftError(true);
     }
 
+    if (choiceResult.source === "script") {
+      setPicksBySlug(choiceResult.picksBySlug);
+    }
+
     setLoading(false);
   }, []);
 
@@ -48,9 +56,11 @@ export function DataProvider({ children }) {
     };
   }, [reload]);
 
+  const choices = useMemo(() => withChoicePicks(CHOICES, picksBySlug), [picksBySlug]);
+
   return (
     <DataContext.Provider
-      value={{ restaurants, gifts, loading, restaurantError, giftError, reload }}
+      value={{ restaurants, gifts, choices, loading, restaurantError, giftError, reload }}
     >
       {children}
     </DataContext.Provider>
