@@ -368,7 +368,7 @@
 <body>
   <div class="deck">
     <section class="slide is-on">
-      <p class="kicker">ADS 卒業制作</p>
+      <p class="kicker">ADS 卒業制作｜開発ストーリー</p>
       <img class="logo" src="logo.png?v=3" alt="M's Omotenashi Concierge">
       <div class="gold-rule"></div>
       <p class="catch">出版社の現場で培った目利きで選ぶ、<br>レストランとギフトのパーソナルガイド</p>
@@ -376,7 +376,7 @@
     </section>
 
     <section class="slide">
-      <p class="kicker">なぜ作ったか</p>
+      <p class="kicker">解決する面倒・課題</p>
       <h2>思い出すだけでなく、呼び出せる形に</h2>
       <div class="gold-rule"></div>
       <div class="quotes">
@@ -398,6 +398,27 @@
         </div>
       </div>
       <p class="sub">お店選びも、ギフトの品選びも、その人を表す。<br>判断基準は頭の中にあった。でも、その場で思い出すしかなかった。</p>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">作りたいと思った理由</p>
+      <h2>実用的で、記録になり、育てられる</h2>
+      <div class="gold-rule"></div>
+      <div class="cards cards-3">
+        <div class="card">
+          <b>実用的</b>
+          <p>相談されたその場で、条件から店や手土産を呼び出せる。</p>
+        </div>
+        <div class="card">
+          <b>自分の記録にもなる</b>
+          <p>行った店、贈りたい手土産を、自分用の備忘録として残せる。</p>
+        </div>
+        <div class="card">
+          <b>これからもアップデートできる</b>
+          <p>シートに足せば公開側も育つ。卒業制作で止めない前提。</p>
+        </div>
+      </div>
+      <p class="sub">口コミの量ではなく、「誰が、どんな基準で選ぶか」。<br>Restaurant と Gift に絞る。</p>
     </section>
 
     <section class="slide slide-shots">
@@ -435,52 +456,25 @@
     </section>
 
     <section class="slide">
-      <p class="kicker">作ったもの｜設計</p>
-      <h2>役割を分けて、目利きを価値にした</h2>
+      <p class="kicker">工夫したポイントと苦戦したポイント</p>
+      <h2>経験を、検索できる項目にした</h2>
       <div class="gold-rule"></div>
       <div class="cards cards-2 wide">
         <div class="card">
-          <b>Visit / Wishlist と Choice</b>
-          <p>Visit＝実際に訪問。Wishlist＝行ってみたい。これは店舗のステータス。Choiceは特集で、ステータスではない。例：個室で接待、グラスでワイン、日持ちする手土産。</p>
+          <b>データ化</b>
+          <p>メモ保存ではなく、呼び出せる項目にする。Visit＝実際に訪問。Wishlist＝行ってみたい。Choiceは特集で、ステータスではない。</p>
         </div>
         <div class="card">
           <b>About M</b>
-          <p>口コミの量では勝負しない。「誰が、どんな経験と基準で選ぶか」。出版社の広告営業で数多くの会食＋ワイン・贈答。「美味しいだけでなく、その場にちょうどいい」。</p>
+          <p>口コミの量では勝負しない。「誰が、どんな経験と基準で選ぶか」。美味しいだけでなく、その場にちょうどいい。</p>
         </div>
         <div class="card">
-          <b>入力を非公開アプリへ</b>
-          <p>当初は Google フォーム。いまは非公開の /edit から入力・修正。来客向けから登録・直すを外した。アプリで直しても、シートに残る。</p>
+          <b>入力を非公開へ</b>
+          <p>当初は Google フォーム。いまは非公開の /edit。来客向けから登録・直すを外した。アプリで直しても、シートに残る。</p>
         </div>
         <div class="card">
-          <b>デザイン</b>
-          <p>見た目は AI（Cursor）で作った。かわいい案から、上質・知的・ニュートラルへ。アイボリー／ネイビー／控えめなゴールド。男性にも使う前提。店を探す AI API とは別。</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide">
-      <p class="kicker">開発で工夫したこと</p>
-      <h2>経験を、検索できる項目にした</h2>
-      <div class="gold-rule"></div>
-      <div class="flow">
-        <div class="flow-box"><div class="num">1</div><strong>経験</strong><span>頭の中の相談と選定</span></div>
-        <div class="arrow">→</div>
-        <div class="flow-box"><div class="num">2</div><strong>構造化</strong><span>呼び出せる項目にする</span></div>
-        <div class="arrow">→</div>
-        <div class="flow-box"><div class="num">3</div><strong>登録・更新</strong><span>シートが正本。/edit</span></div>
-        <div class="arrow">→</div>
-        <div class="flow-box"><div class="num">4</div><strong>検索</strong><span>条件と単語</span></div>
-        <div class="arrow">→</div>
-        <div class="flow-box"><div class="num">5</div><strong>音声</strong><span>入力。AIは未接続</span></div>
-      </div>
-      <div class="now-next">
-        <div class="card">
-          <b>いま</b>
-          <p>条件・フリーワード・Web Speech の日本語音声。「恵比寿 和食」のような単語・条件はできる。文の意味理解は、まだしない。</p>
-        </div>
-        <div class="card">
-          <b>これから</b>
-          <p>「恵比寿で和食が食べたい」をAIが解釈 → 条件へ変換 → M自身の登録データから返す。世の中の店を聞かない。</p>
+          <b>デザインと音声</b>
+          <p>見た目は Cursor。かわいい案から上質・知的・ニュートラルへ。いまの音声は入力。「恵比寿 和食」はできる。文の意味理解はこれから。</p>
         </div>
       </div>
       <p class="sub">AIを付けることから始めたのではない。先に、自分の経験を構造化した。</p>
@@ -495,7 +489,7 @@
     </section>
 
     <section class="slide">
-      <p class="kicker">今後の計画</p>
+      <p class="kicker">コンセプトの続きと、これから</p>
       <h2>検索から、知識へ</h2>
       <div class="gold-rule"></div>
       <div class="stages">

@@ -215,7 +215,7 @@ def build():
         return s
 
     s = new()
-    kicker(s, "ADS 卒業制作")
+    kicker(s, "ADS 卒業制作｜開発ストーリー")
     logo = PUB / "logo.png"
     if logo.exists():
         s.shapes.add_picture(str(logo), Inches(5.15), Inches(1.15), width=Inches(3.0))
@@ -253,7 +253,7 @@ def build():
     )
 
     s = new()
-    kicker(s, "なぜ作ったか")
+    kicker(s, "解決する面倒・課題")
     title(s, "思い出すだけでなく、呼び出せる形に")
     gold_rule(s)
     q1 = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(1.45), Inches(5.7), Inches(1.15))
@@ -293,6 +293,32 @@ def build():
         "判断基準は、頭の中にはあった。でも、その場で思い出すしかなかったんです。\n\n"
         "結論：グルメアプリではなく、自分の目利きで選んだ経験を、検索できる知識に変えた。"
         "AIは後から付けるために、先に構造化した。",
+    )
+
+    s = new()
+    kicker(s, "作りたいと思った理由")
+    title(s, "実用的で、記録になり、育てられる")
+    gold_rule(s)
+    card(s, Inches(0.7), Inches(1.5), Inches(3.85), Inches(3.4), "実用的", "相談されたその場で、条件から店や手土産を呼び出せる。")
+    card(s, Inches(4.75), Inches(1.5), Inches(3.85), Inches(3.4), "自分の記録にもなる", "行った店、贈りたい手土産を、自分用の備忘録として残せる。")
+    card(s, Inches(8.8), Inches(1.5), Inches(3.85), Inches(3.4), "これからもアップデートできる", "シートに足せば公開側も育つ。卒業制作で止めない前提。")
+    textbox(
+        s,
+        Inches(0.8),
+        Inches(5.2),
+        Inches(11.7),
+        Inches(1.4),
+        [
+            {"text": "口コミの量ではなく、「誰が、どんな基準で選ぶか」。", "size": 15, "color": NAVY, "font": SERIF, "after": 6, "align": PP_ALIGN.CENTER},
+            {"text": "Restaurant と Gift に絞る。", "size": 14, "color": SOFT, "after": 0, "align": PP_ALIGN.CENTER},
+        ],
+        align=PP_ALIGN.CENTER,
+    )
+    notes(
+        s,
+        "お題を選んだのは、実用的で、自分の記録にもなるし、これからもアップデートできるからです。"
+        "相談されたその場で呼び出せる。行った店や贈りたい手土産を、備忘録として残せる。"
+        "シートに足せば、公開側も育つ。卒業制作で止めない前提です。",
     )
 
     s = new()
@@ -350,66 +376,29 @@ def build():
     )
 
     s = new()
-    kicker(s, "作ったもの｜設計")
-    title(s, "役割を分けて、目利きを価値にした")
-    gold_rule(s)
-    card(s, Inches(0.7), Inches(1.5), Inches(5.85), Inches(2.4), "Visit / Wishlist と Choice", "Visit＝実際に訪問。Wishlist＝行ってみたい。店舗のステータス。Choiceは特集で、ステータスではない。例：個室で接待、グラスでワイン、日持ちする手土産。")
-    card(s, Inches(6.75), Inches(1.5), Inches(5.85), Inches(2.4), "About M", "口コミの量では勝負しない。「誰が、どんな経験と基準で選ぶか」。出版社の広告営業で数多くの会食＋ワイン・贈答。「美味しいだけでなく、その場にちょうどいい」。")
-    card(s, Inches(0.7), Inches(4.1), Inches(5.85), Inches(2.55), "入力を非公開アプリへ", "当初は Google フォーム。いまは非公開の /edit から入力・修正。来客向けから登録・直すを外した。アプリで直しても、シートに残る。")
-    card(s, Inches(6.75), Inches(4.1), Inches(5.85), Inches(2.55), "デザイン", "見た目は AI（Cursor）で作った。かわいい案から、上質・知的・ニュートラルへ。アイボリー／ネイビー／控えめなゴールド。店を探す AI API とは別。")
-    notes(
-        s,
-        "Visit は実際に訪問、Wishlist は行ってみたい。Choice は特集で、ステータスではありません。\n"
-        "見た目も、AI で作りました。かわいい、女性向けに寄りすぎる案も出た。"
-        "男性にも使ってほしいので、上質・知的・ニュートラルへ寄せた。\n"
-        "デザインに使ったのは Cursor。検索の AI API は、まだ繋いでいません。",
-    )
-
-    s = new()
-    kicker(s, "開発で工夫したこと")
+    kicker(s, "工夫したポイントと苦戦したポイント")
     title(s, "経験を、検索できる項目にした")
     gold_rule(s)
-    labels = [
-        ("1", "経験", "頭の中の相談と選定"),
-        ("2", "構造化", "呼び出せる項目にする"),
-        ("3", "登録・更新", "シートが正本。/edit"),
-        ("4", "検索", "条件と単語"),
-        ("5", "音声", "入力。AIは未接続"),
-    ]
-    for i, (n, h, b) in enumerate(labels):
-        left = Inches(0.45 + i * 2.55)
-        box = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, left, Inches(1.5), Inches(2.35), Inches(2.15))
-        rgb_fill(box, WHITE)
-        line_color(box, LINE, Pt(1))
-        try:
-            box.adjustments[0] = 0.1
-        except Exception:
-            pass
-        circ = s.shapes.add_shape(MSO_SHAPE.OVAL, left + Inches(0.95), Inches(1.62), Inches(0.42), Inches(0.42))
-        rgb_fill(circ, IVORY)
-        line_color(circ, GOLD, Pt(1))
-        textbox(s, left + Inches(0.95), Inches(1.66), Inches(0.42), Inches(0.38), [{"text": n, "size": 11, "color": NAVY, "after": 0}], align=PP_ALIGN.CENTER)
-        textbox(s, left + Inches(0.1), Inches(2.15), Inches(2.15), Inches(0.4), [{"text": h, "size": 14, "color": NAVY, "font": SERIF, "after": 0}], align=PP_ALIGN.CENTER)
-        textbox(s, left + Inches(0.1), Inches(2.55), Inches(2.15), Inches(0.85), [{"text": b, "size": 12, "color": SOFT, "after": 0}], align=PP_ALIGN.CENTER)
-        if i < 4:
-            textbox(s, left + Inches(2.2), Inches(2.2), Inches(0.4), Inches(0.4), [{"text": "→", "size": 16, "color": GOLD, "after": 0}], align=PP_ALIGN.CENTER)
-    card(s, Inches(0.7), Inches(3.9), Inches(5.85), Inches(2.0), "いま", "条件・フリーワード・Web Speech の日本語音声。「恵比寿 和食」のような単語・条件はできる。文の意味理解は、まだしない。")
-    card(s, Inches(6.75), Inches(3.9), Inches(5.85), Inches(2.0), "これから", "「恵比寿で和食が食べたい」をAIが解釈 → 条件へ変換 → M自身の登録データから返す。世の中の店を聞かない。")
+    card(s, Inches(0.7), Inches(1.5), Inches(5.85), Inches(2.15), "データ化", "メモ保存ではなく、呼び出せる項目にする。Visit＝実際に訪問。Wishlist＝行ってみたい。Choiceは特集で、ステータスではない。")
+    card(s, Inches(6.75), Inches(1.5), Inches(5.85), Inches(2.15), "About M", "口コミの量では勝負しない。「誰が、どんな経験と基準で選ぶか」。美味しいだけでなく、その場にちょうどいい。")
+    card(s, Inches(0.7), Inches(3.85), Inches(5.85), Inches(2.15), "入力を非公開へ", "当初は Google フォーム。いまは非公開の /edit。来客向けから登録・直すを外した。アプリで直しても、シートに残る。")
+    card(s, Inches(6.75), Inches(3.85), Inches(5.85), Inches(2.15), "デザインと音声", "見た目は Cursor。かわいい案から上質・知的・ニュートラルへ。いまの音声は入力。「恵比寿 和食」はできる。文の意味理解はこれから。")
     textbox(
         s,
         Inches(0.8),
-        Inches(6.05),
+        Inches(6.2),
         Inches(11.7),
-        Inches(0.9),
+        Inches(0.7),
         [{"text": "AIを付けることから始めたのではない。先に、自分の経験を構造化した。", "size": 15, "color": NAVY, "font": SERIF, "after": 0, "align": PP_ALIGN.CENTER}],
         align=PP_ALIGN.CENTER,
     )
     notes(
         s,
         "やり方は、単純です。暗黙知を、検索できる項目にする。\n"
-        "いまの音声は、入力です。「恵比寿 和食」はできる。「恵比寿で和食が食べたい」の意味理解は、これから。\n"
-        "世の中の店を AI に聞くのではありません。私の登録データを、再利用する。"
-        "そのために、先に構造化した。",
+        "Visit は実際に訪問、Wishlist は行ってみたい。Choice は特集で、ステータスではありません。\n"
+        "見た目も、AI で作りました。かわいい案から、上質・知的・ニュートラルへ。デザインは Cursor。検索の AI API は、まだ繋いでいません。\n"
+        "いまの音声は、入力です。「恵比寿 和食」はできる。「恵比寿で和食が食べたい」の意味理解は、これから。"
+        "世の中の店を AI に聞くのではありません。私の登録データを、再利用する。",
     )
 
     s = new()
@@ -443,7 +432,7 @@ def build():
     )
 
     s = new()
-    kicker(s, "今後の計画")
+    kicker(s, "コンセプトの続きと、これから")
     title(s, "検索から、知識へ")
     gold_rule(s)
     card(
@@ -526,8 +515,13 @@ def build():
     copied = None
     if desktop_dir.is_dir():
         dest = desktop_dir / "卒業発表.pptx"
-        dest.write_bytes(OUT.read_bytes())
-        copied = dest
+        try:
+            dest.write_bytes(OUT.read_bytes())
+            copied = dest
+        except OSError:
+            dest = desktop_dir / "卒業発表_最新.pptx"
+            dest.write_bytes(OUT.read_bytes())
+            copied = dest
     print(str(OUT))
     if copied:
         print(str(copied))

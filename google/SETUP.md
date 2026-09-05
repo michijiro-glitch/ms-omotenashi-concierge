@@ -82,4 +82,8 @@ Code.gs を更新したあとは、ウェブアプリを **新バージョン** 
 
 Apps Script で関数名を **`importSeedData`** にして ▶ 実行する。すでにシートにある店名は追加しません。
 
+## GitHub アカウントを移すとき
+
+Sheets 側はそのままです。新しいリポジトリに作り直す場合だけ、GitHub の Secrets に `.env.local` と同じ3つの URL を入れ直してください。リポジトリを移譲した場合は Secrets も付いてきます。デプロイ後、公開 URL は `https://（新しいユーザー名）.github.io/ms-omotenashi-concierge/` になります。
+
 
